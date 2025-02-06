@@ -34,6 +34,15 @@ CREATE TABLE IF NOT EXISTS `log` (
 -- Volcando datos para la tabla grua_municipal.log: ~0 rows (aproximadamente)
 DELETE FROM `log`;
 
+-- Volcando estructura para tabla grua_municipal.precio_tipo
+CREATE TABLE IF NOT EXISTS `precio_tipo` (
+  `tipo` varchar(50) DEFAULT NULL,
+  `coste` float DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+-- Volcando datos para la tabla grua_municipal.precio_tipo: ~0 rows (aproximadamente)
+DELETE FROM `precio_tipo`;
+
 -- Volcando estructura para tabla grua_municipal.retiradas
 CREATE TABLE IF NOT EXISTS `retiradas` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -103,9 +112,9 @@ CREATE TABLE IF NOT EXISTS `vehiculos` (
   `tipo_vehiculo` varchar(100) NOT NULL DEFAULT '',
   `grua` varchar(50) NOT NULL,
   `estado` varchar(20) DEFAULT 'En depósito',
-  `borrado` tinyint(4) NOT NULL,
+  `deleted_at` datetime DEFAULT NULL,
   KEY `Índice 1` (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=ucs2 COLLATE=ucs2_general_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=2025000 DEFAULT CHARSET=ucs2 COLLATE=ucs2_general_ci;
 
 -- Volcando datos para la tabla grua_municipal.vehiculos: 0 rows
 DELETE FROM `vehiculos`;
