@@ -8,20 +8,15 @@ let app = new Vue({
     },
     methods: {
         intentoLogin() {
-            fetch('http://localhost/todos/usuarios')
+            fetch('http://localhost/DWEC/grua/DWEC/private/ApiGrua/public/usuarios')
                 .then(response => response.json())
-                .then(user => {
+                .then(users => {
+                    const user = user.find(user => user.email == this.email && user.password == this.contrasena);
                     if (user){
-                        console.log(user);
+                        
                     }
                 })
-            if (this.email === 'admin' && this.contrasena === 'admin') {
-                this.logeado = true;
-                console.log("logeado");
-            } else {
-                this.logeado = false;
-                console.log("no logeado");
-            }
+            
         }
     }
 });

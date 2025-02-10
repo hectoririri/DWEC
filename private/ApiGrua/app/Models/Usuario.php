@@ -25,7 +25,7 @@ class Usuario extends Model
      *
      * @return json usuarios
      */
-    public function index()
+    public static function getUsuarios()
     {
         $usuarios = self::all()->toJson();
         return $usuarios;
