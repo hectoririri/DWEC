@@ -24,7 +24,7 @@ class Log extends Model
      *
      * @return json log
      */
-    public function index()
+    public static function getLogs()
     {
         $log = self::all()->toJson();
         return $log;

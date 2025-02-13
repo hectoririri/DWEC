@@ -25,8 +25,9 @@
   </head>
   <body>
     <div class="container" id="app">
-      <h1 class="text-center">GRUA MUNICIPAL</h1>
+      <!-- No logeado -->
       <div v-if="!logeado">
+        <h1 class="text-center">GRUA MUNICIPAL</h1>
         <label for="email">Email:</label>
             <input
               type="text"
@@ -45,9 +46,38 @@
             />
         <button type="button" @click="intentoLogin" class="btn btn-primary mt-3">Enviar</button>
       </div>
+      <!-- Logueado -->
       <div v-else>
-        <!-- otro div si es admin o no -->
-        <h2>Bienvenido, administrador!</h2>
+        <div>
+          <header>
+            Panel Administración Grua Municipal {{usuario.email}}
+          </header>
+          <nav>
+            <ul>
+              <!-- Registro con todas las acciones y listar solo con el listado para el admin -->
+              <li v-if="!isAdmin()"><button type="button">Registro Vehículo</button></li>
+              <li v-if="isAdmin()"><button type="button">Listado Vehículos Registrados</button></li>
+              <li v-if="isAdmin()"><button type="button">Retirada Vehículo</button></li>
+              <li v-if="isAdmin()"><button type="button">Gestión Usuarios</button></li>
+            </ul>
+          </nav>
+          <section>
+
+          </section>
+          <footer class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2);">
+              © 2023 Todos los derechos reservados:
+              </li> -->
+              <!-- Mantener sesion -->
+            </ul>
+          </nav>
+          <section>
+
+          </section>
+          <footer class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2);">
+              © 2023 Todos los derechos reservados:
+              <a class="text-white" href="#">docarmoelmejor.com</a>
+          </footer>
+        </div>
       </div>
     </div>
 
