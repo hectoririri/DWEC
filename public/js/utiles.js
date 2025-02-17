@@ -5,9 +5,11 @@ let app = new Vue({
         email: "", // Modelo para el campo email
         contrasena: "", // Modelo para el campo contraseña
         usuario: "", //Json del usuario logueado
+        usuarios: [], // Lista usuarios
+        selectedUserId: "", // Último usuario seleccionado
         logeado: false, // Booleano que indica si se ha logeado o no
         pantalla: "", //Pantalla actual
-
+        vehiculos: [], // Lista de vehículos
     },
     methods: {
         mostrarRegistro(){
@@ -18,6 +20,19 @@ let app = new Vue({
         },
         mostrarUsuarios(){
             this.pantalla = "usuarios";
+            this.obtenerUsuarios();
+        },
+        formularioCrearUsuario(){
+            console.log("modal de formulario usuario"); 
+        },
+        formularioEditarUsuario(id){
+            console.log("modal de modificar formulario usuario "+id);
+            this.selectedUserId = id;
+        },
+        formularioEliminarUsuario(id){
+            console.log("modal de eliminar formulario usuario "+id); 
+            // Meter html del modal aqui e insertar en index.html
+            this.selectedUserId = id;
         },
         intentoLogin() {
             fetch(this.url+'usuarios')
@@ -69,6 +84,19 @@ let app = new Vue({
             .catch(error => {
                 console.error("Ocurrió un error:", error);
             });
+        },
+        obtenerUsuarios() {
+            fetch(this.url+'usuarios', {
+                method: 'GET',
+            })
+                .then(response => response.json())
+                .then(data => {
+                    this.usuarios = data;
+                    console.log(this.usuarios);
+                })
+                .catch(error => {
+                    console.error("Error al obtener los usuarios:", error);
+                });
         }
     }
 });
