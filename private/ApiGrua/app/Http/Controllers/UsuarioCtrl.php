@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Log;
 use Illuminate\Http\Request;
 use App\Models\Usuario;
 
@@ -29,7 +30,16 @@ class UsuarioCtrl extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // Validación de datos
+        $validatedData = $request->validate([
+            'email' => 'required|email|max:255',
+            'password' => 'required|string|min:6',
+        ]);
+
+        // Crear un nuevo registro
+        $usuario = Usuario::create($validatedData);
+
+        return response()->json($usuario, 201); // Devuelve el usuario creado con código 201
     }
 
     /**

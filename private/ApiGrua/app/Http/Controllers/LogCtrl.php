@@ -34,20 +34,19 @@ class LogCtrl extends Controller
     {
         // Validar los datos enviados
         $validatedData = $request->validate([
-            'usuario_id' => 'nullable',
-            'descripcion' => 'nullable', // Ajusta las reglas según tus necesidades
-            'fecha' => 'nullable',
-            'accion' => 'nullable',
+            'usuario_id' => 'nullable|integer',
+            'descripcion' => 'nullable|string',
+            'fecha' => 'nullable|date',
+            'accion' => 'nullable|string',
         ]);
 
-        // Aquí puedes guardar los datos en la base de datos o realizar otras acciones
-        // Por ejemplo, guardar en una tabla "logs"
-        Log::create($validatedData);
+        // Crear un nuevo registro en la base de datos
+        $log = Log::create($validatedData);
 
         // Devolver una respuesta JSON
         return response()->json([
-            'message' => 'Solicitud POST recibida',
-            'data' => $validatedData,
+            'message' => 'Registro creado exitosamente',
+            'data' => $log,
         ], 201); // Código de estado 201 (Created)
     }
 

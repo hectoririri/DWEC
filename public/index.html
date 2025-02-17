@@ -55,23 +55,22 @@
           <nav>
             <ul>
               <!-- Registro con todas las acciones y listar solo con el listado para el admin -->
-              <li v-if="!isAdmin()"><button type="button">Registro Vehículo</button></li>
-              <li v-if="isAdmin()"><button type="button">Listado Vehículos Registrados</button></li>
-              <li v-if="isAdmin()"><button type="button">Retirada Vehículo</button></li>
-              <li v-if="isAdmin()"><button type="button">Gestión Usuarios</button></li>
+              <li v-if="!isAdmin()"><button type="button" @click="mostrarRegistro">Registro Vehículo</button></li>
+              <li v-if="isAdmin()"><button type="button" >Listado Vehículos Registrados</button></li>
+              <li v-if="isAdmin()"><button type="button" @click="mostrarRetirada">Retirada Vehículo</button></li>
+              <li v-if="isAdmin()"><button type="button" @click="mostrarUsuarios">Gestión Usuarios</button></li>
             </ul>
           </nav>
           <section>
-
-          </section>
-          <footer class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2);">
-              © 2023 Todos los derechos reservados:
-              </li> -->
-              <!-- Mantener sesion -->
-            </ul>
-          </nav>
-          <section>
-
+            <div v-if="pantalla === 'usuarios'">
+              <h1>Gestión de usuarios</h1>
+            </div>
+            <div v-if="pantalla === 'registro'">
+              <h1>Registro de vehiculos</h1>
+            </div>
+            <div v-if="pantalla === 'retirada'">
+              <h1>Retirada de vehiculo</h1>
+            </div>
           </section>
           <footer class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2);">
               © 2023 Todos los derechos reservados:
@@ -80,7 +79,5 @@
         </div>
       </div>
     </div>
-
-    <footer></footer>
   </body>
 </html>

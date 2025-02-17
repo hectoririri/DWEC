@@ -10,6 +10,15 @@ let app = new Vue({
 
     },
     methods: {
+        mostrarRegistro(){
+            this.pantalla = "registro";
+        },
+        mostrarRetirada(){
+            this.pantalla = "retirada";
+        },
+        mostrarUsuarios(){
+            this.pantalla = "usuarios";
+        },
         intentoLogin() {
             fetch(this.url+'usuarios')
                 .then(response => response.json())
@@ -40,7 +49,7 @@ let app = new Vue({
                 descripcion: "El usuario ha iniciado sesión",
                 fecha: new Date().toISOString().slice(0, 19).replace('T', ' ')
             };
-            fetch(this.url+'logs/store', {
+            fetch(this.url+'logs', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
