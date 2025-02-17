@@ -3,44 +3,55 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 
+/**
+ * Class Retirada
+ *
+ * @property $id
+ * @property $id_vehiculos
+ * @property $id_tarifa
+ * @property $nombre
+ * @property $nif
+ * @property $domicilio
+ * @property $poblacion
+ * @property $provincia
+ * @property $permiso
+ * @property $fecha
+ * @property $agente
+ *
+ * @property Vehiculo $vehiculo
+ * @property Tarifa $tarifa
+ * @package App
+ * @mixin \Illuminate\Database\Eloquent\Builder
+ */
 class Retirada extends Model
 {
-    protected $table = "retiradas";
-    protected $primaryKey = "id";
+    
+    protected $perPage = 20;
     public $timestamps = false;
-    protected $guarded = [];
 
     /**
-     * Relación uno a uno con tarifa
+     * The attributes that are mass assignable.
      *
-     * @return HasOne
+     * @var array<int, string>
      */
-    public function tarifa(): BelongsTo
-    {
-        return $this->BelongsTo(Tarifa::class, 'id_tarifa', 'id');
-    }
+    protected $fillable = ['id_vehiculos', 'id_tarifa', 'nombre', 'nif', 'domicilio', 'poblacion', 'provincia', 'permiso', 'fecha', 'agente'];
+
 
     /**
-     * Relación uno a uno con vehiculo
-     *
-     * @return HasOne
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function vehiculo(): BelongsTo
+    public function vehiculo()
     {
-        return $this->BelongsTo(Vehiculo::class, 'id_vehiculos', 'id');
+        return $this->belongsTo(\App\Models\Vehiculo::class, 'id_vehiculos', 'id');
     }
-
+    
     /**
-     * Devuelve todos las retiradas
-     *
-     * @return json retirada
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function index()
+    public function tarifa()
     {
-        $retirada = self::all()->toJson();
-        return $retirada;
+        return $this->belongsTo(\App\Models\Tarifa::class, 'id_tarifa', 'id');
     }
+    
 }

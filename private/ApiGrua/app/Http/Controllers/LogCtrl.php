@@ -37,11 +37,9 @@ class LogCtrl extends Controller
             'accion' => 'nullable',
         ]);
 
-        // https://laracasts.com/discuss/channels/laravel/validation-problem-the-post-method-is-not-supported-for-route?page=1&replyId=918850
-
         // Aquí puedes guardar los datos en la base de datos o realizar otras acciones
         // Por ejemplo, guardar en una tabla "logs"
-        // Log::create($validatedData);
+        Log::create($validatedData);
 
         // Devolver una respuesta JSON
         return response()->json([

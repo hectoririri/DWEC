@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Vehiculo;
 use Illuminate\Http\Request;
 
 class VehiculoCtrl extends Controller
@@ -11,7 +12,11 @@ class VehiculoCtrl extends Controller
      */
     public function index()
     {
-        //
+        $vehiculos = Vehiculo::all();
+
+        return response()->json([
+            'vehiculos' => $vehiculos
+        ]);
     }
 
     /**

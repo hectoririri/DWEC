@@ -3,33 +3,43 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * Class Usuario
+ *
+ * @property $id
+ * @property $email
+ * @property $password
+ * @property $borrado
+ * @property $rol
+ * @property $deleted_at
+ *
+ * @property Log[] $logs
+ * @package App
+ * @mixin \Illuminate\Database\Eloquent\Builder
+ */
 class Usuario extends Model
 {
     use SoftDeletes;
-    protected $table = "usuario";
-    protected $primaryKey = "id";
     public $timestamps = false;
-    protected $guarded = [];
 
-    // Relación uno a muchos (un usuario tiene muchos logs)
-    public function log(): HasMany
-    {
-        return $this->hasMany(Log::class);
-    }
+    protected $perPage = 20;
 
     /**
-     * Devuelve todos los usuarios
+     * The attributes that are mass assignable.
      *
-     * @return json usuarios
+     * @var array<int, string>
      */
-    public static function getUsuarios()
+    protected $fillable = ['email', 'borrado', 'rol'];
+
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function logs()
     {
-        $usuarios = self::all()->toJson();
-        return $usuarios;
+        return $this->hasMany(\App\Models\Log::class, 'id', 'usuario_id');
     }
-
+    
 }
-

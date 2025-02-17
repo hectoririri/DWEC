@@ -3,30 +3,41 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * Class Log
+ *
+ * @property $id
+ * @property $usuario_id
+ * @property $accion
+ * @property $descripcion
+ * @property $fecha
+ * @property $created_at
+ * @property $updated_at
+ *
+ * @property Usuario $usuario
+ * @package App
+ * @mixin \Illuminate\Database\Eloquent\Builder
+ */
 class Log extends Model
 {
-    protected $table = "log";
-    protected $primaryKey = "id";
-    public $timestamps = false;
-    protected $guarded = [];
-
-    // Relación muchos a uno (muchos logs pertenecen a un usuario)
-    public function Usuario(): BelongsTo
-    {
-        return $this->belongsTo(Usuario::class, 'usuario_id'. 'id');
-    }
+    
+    protected $perPage = 20;
 
     /**
-     * Devuelve todos los log
+     * The attributes that are mass assignable.
      *
-     * @return json log
+     * @var array<int, string>
      */
-    public static function getLogs()
+    protected $fillable = ['usuario_id', 'accion', 'descripcion', 'fecha'];
+
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function usuario()
     {
-        $log = self::all()->toJson();
-        return $log;
+        return $this->belongsTo(\App\Models\Usuario::class, 'usuario_id', 'id');
     }
+    
 }

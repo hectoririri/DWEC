@@ -3,35 +3,42 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * Class Tarifa
+ *
+ * @property $id
+ * @property $opcion_pago
+ * @property $importe_retirada
+ * @property $importe_deposito
+ * @property $horas_gratis
+ * @property $costo_por_hora
+ * @property $total
+ *
+ * @property Retirada[] $retiradas
+ * @package App
+ * @mixin \Illuminate\Database\Eloquent\Builder
+ */
 class Tarifa extends Model
 {
-    use SoftDeletes;
-    protected $table = "tarifa";
-    protected $primaryKey = "id";
     public $timestamps = false;
-    protected $guarded = [];
+
+    protected $perPage = 20;
 
     /**
-     * Relación uno a uno con retirada
+     * The attributes that are mass assignable.
      *
-     * @return HasOne
+     * @var array<int, string>
      */
-    public function retirada(): HasOne
-    {
-        return $this->hasOne(Retirada::class, 'id_tarifa', 'id');
-    }
+    protected $fillable = ['opcion_pago', 'importe_retirada', 'importe_deposito', 'horas_gratis', 'costo_por_hora', 'total'];
+
 
     /**
-     * Devuelve todos las tarifas
-     *
-     * @return json tarifas
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function index()
+    public function retiradas()
     {
-        $tarifas = self::all()->toJson();
-        return $tarifas;
+        return $this->hasMany(\App\Models\Retirada::class, 'id', 'id_tarifa');
     }
+    
 }
