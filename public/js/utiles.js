@@ -6,7 +6,6 @@ let app = new Vue({
         contrasena: "", // Modelo para el campo contraseña
         usuario: "", //Json del usuario logueado
         usuarios: [], // Lista usuarios
-        selectedUserId: "", // Último usuario seleccionado
         logeado: false, // Booleano que indica si se ha logeado o no
         pantalla: "", //Pantalla actual
         vehiculos: [], // Lista de vehículos
@@ -32,7 +31,26 @@ let app = new Vue({
         formularioEliminarUsuario(id){
             console.log("modal de eliminar formulario usuario "+id); 
             // Meter html del modal aqui e insertar en index.html
-            this.selectedUserId = id;
+            document.getElementById('mostrarModal').innerHTML = `
+                <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="deleteModalLabel">Confirmar eliminación</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                        ¿Está seguro de que desea eliminar al usuario ${id}?
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-danger" onclick="app.eliminarUsuario(${id})">Eliminar</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>`
         },
         intentoLogin() {
             fetch(this.url+'usuarios')
