@@ -1,7 +1,7 @@
 let app = new Vue({
     el: "#app", // Elemento del DOM al que hace referencia
     data: {
-        url: "http://localhost/DWEC/private/ApiGrua/public/", // URL de la ubicación de la aplicación
+        url: "http://localhost/DWEC/private/ApiGrua/public/api/", // URL de la ubicación de la aplicación
         email: "", // Modelo para el campo email
         contrasena: "", // Modelo para el campo contraseña
         usuario: "", //Json del usuario logueado

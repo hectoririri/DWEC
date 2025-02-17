@@ -12,7 +12,7 @@ class UsuarioCtrl extends Controller
      */
     public function index()
     {
-        $usuarios = Usuario::getUsuarios();
+        $usuarios = Usuario::all();
         return $usuarios;
     }
 

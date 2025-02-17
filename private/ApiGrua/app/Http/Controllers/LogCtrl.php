@@ -12,8 +12,11 @@ class LogCtrl extends Controller
      */
     public function index()
     {
-        $logs = Log::getLogs();
-        return $logs;
+        $logs = Log::all();
+
+        return response()->json([
+            'logs' => $logs
+        ]);
     }
 
     /**
