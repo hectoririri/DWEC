@@ -79,7 +79,73 @@
             </div>
             <!-- Retirada de vehiculo (admin) -->
             <div v-if="pantalla === 'retirada'">
-              <h1>Retirada de vehiculo</h1>
+              <h1>Gestión de retiradas de vehículos</h1>
+              <h3><button @click="formularioCrearRetirada" data-toggle="modal" data-target="#createModal">Crear retirada</button></h3>
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Id_vehiculos</th>
+                    <th>Id_tarifa</th>
+                    <th>Nif</th>
+                    <th>Domicilio</th>
+                    <th>Población</th>
+                    <th>Provincia</th>
+                    <th>Permiso</th>
+                    <th>Fecha</th>
+                    <th>Agente</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="usuario in usuarios">
+                    <td>{{ usuario.id }}</td>
+                    <td>{{ usuario.email }}</td>
+                    <td>{{ usuario.password }}</td>
+                    <td>{{ usuario.rol }}</td>
+                    <td>
+                      <button @click="formularioEditarUsuario(usuario.id)" class="btn btn-primary" data-toggle="modal" data-target="#editModal">Editar usuario</button></td>
+                    <td>
+                      <button @click="formularioEliminarUsuario(usuario.id)" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal">Eliminar usuario</button>
+                    </td>
+                    </tr>
+                  </tbody>
+              </table>
+              <!-- Modal nueva retirada -->
+              <div class="modal fade" id="createRetirada" tabindex="-1" role="dialog" aria-labelledby="createRetiradaLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="createRetiradaLabel">Retirada del vehículo</h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      <label for="email">id_vehiculo</label>
+                      <input type="text" class="form-control" v-model="id_vehiculo"/>
+                      <label for="password">id_tarifa</label>
+                      <input type="text" class="form-control" v-model="id_tarifa"/>
+                      <label for="rol">Nombre</label>
+                      <input type="text" class="form-control" v-model="nombre"/>
+                      <label for="rol">Nif</label>
+                      <input type="text" class="form-control" v-model="nif"/>
+                      <label for="rol">Domicilio</label>
+                      <input type="text" class="form-control" v-model="domicilio"/>
+                      <label for="rol">Población</label>
+                      <input type="text" class="form-control" v-model="nombre"/>
+                      <label for="rol">Permiso</label>
+                      <input type="text" class="form-control" v-model="permiso"/>
+                      <label for="rol">Agente</label>
+                      <input type="text" class="form-control" v-model="agente"/>
+                      <label for="rol">Fecha</label>
+                      <input type="datetime-local" class="form-control" v-model="fecha"/>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                      <button type="button" class="btn btn-primary" @click="crearUsuario">Crear usuario</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
             <!-- Gestión de usuarios (admin) -->
             <div v-if="pantalla === 'usuarios'">
