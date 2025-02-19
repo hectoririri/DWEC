@@ -31,30 +31,31 @@ class UsuarioCtrl extends Controller
      */
     public function store(Request $request)
     {
-        $usuario = Usuario::find($request->input('email'));
-        if ($usuario) {
-            return response()->json(['message' => 'Usuario ya existente'], 404);
-        }
+        // Log the incoming request data
+        // Log::info('Datos recibidos en store:', $request->all());
 
         // Validar los datos recibidos
-        // $validator = Validator::make($request->all(), [
-        //     'email' => 'required|email|unique:usuarios,email,' . $id,
-        //     'rol' => 'required|in:administrador,usuario',
-        //     'password' => 'nullable|min:6', // Opcional, solo si se desea cambiar la contraseña
-        // ]);
+        $validatedData = $request->validate([
+            'email' => 'required|email|unique:usuarios,email',
+            'rol' => 'required|string',
+            'password' => 'required|string|min:6',
+        ]);
 
-        // if ($validator->fails()) {
-        //     return response()->json(['errors' => $validator->errors()], 422);
-        // }
+        // Log the validated data
+        // Log::info('Datos validados:', $validatedData);
 
-        // Actualizar el usuario
-        $usuario->email = $request->input('email');
-        $usuario->rol = $request->input('rol');
-        $usuario->password = $request->input('password');
+        // Crear un nuevo usuario
+        $usuario = new Usuario();
+        $usuario->email = $validatedData['email'];
+        $usuario->rol = $validatedData['rol'];
+        $usuario->password = $validatedData['password'];
+        // $usuario->password = bcrypt($validatedData['password']); // Encriptar la contraseña
+        $usuario->save();
 
-        $usuario->create();
+        // Log the created user
+        // Log::info('Usuario creado:', $usuario);
 
-        return response()->json($usuario, 200); // Devuelve el usuario actualizado con código 200
+        return response()->json(['message' => 'Usuario creado correctamente'], 201);
     }
 
     /**

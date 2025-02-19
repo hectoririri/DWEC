@@ -30,31 +30,55 @@
   <body>
     <div class="container" id="app">
       <!-- No logeado -->
-      <div v-if="!logeado">
-        <h1 class="text-center">GRUA MUNICIPAL</h1>
-        <label for="email">Email:</label>
-            <input
-              type="text"
-              class="form-control"
-              v-model="email"
-              name="email"
-              id="email"
-            />
-        <label for="contrasena" class="mt-2">Contraseña:</label>
-            <input
-              type="password"
-              class="form-control"
-              v-model="contrasena"
-              name="contrasena"
-              id="contrasena"
-            />
-        <button type="button" @click="intentoLogin" class="btn btn-primary mt-3">Enviar</button>
+      <div v-if="!logeado" class="d-flex justify-content-center align-items-center vh-100">
+        <div class="card p-4 shadow-lg" style="width: 30rem; border-radius: 15px;">
+          <div class="card-body text-center">
+            <!-- Título -->
+            <h1 class="card-title mb-4">GRUA MUNICIPAL</h1>
+            <p class="card-text text-muted mb-4">Inicia sesión para continuar</p>
+              <!-- Campo de Email -->
+              <div class="mb-3">
+                <label for="email" class="form-label">Email:</label>
+                <input
+                  type="text"
+                  class="form-control form-control-lg"
+                  v-model="email"
+                  name="email"
+                  id="email"
+                  placeholder="Ingresa tu email"
+                />
+              </div>
+      
+              <!-- Campo de Contraseña -->
+              <div class="mb-3">
+                <label for="contrasena" class="form-label">Contraseña:</label>
+                <input
+                  type="password"
+                  class="form-control form-control-lg"
+                  v-model="contrasena"
+                  name="contrasena"
+                  id="contrasena"
+                  placeholder="Ingresa tu contraseña"
+                />
+              </div>
+      
+              <!-- Botón de Inicio de Sesión -->
+              <button
+                type="button"
+                @click="intentoLogin"
+                class="btn btn-primary btn-lg w-100 mt-4"
+              >
+                Iniciar Sesión
+              </button>
+            </p>
+          </div>
+        </div>
       </div>
       <!-- Logueado -->
       <div v-else>
         <div>
           <header>
-            Panel Administración Grua Municipal {{usuario.email}}
+            <p class="bg">Panel Administración Grua Municipal {{usuario.email}}</p>
           </header>
           <nav>
             <ul>
@@ -167,7 +191,11 @@
                     <td>{{ usuario.id }}</td>
                     <td>{{ usuario.email }}</td>
                     <td>{{ usuario.password }}</td>
-                    <td>{{ usuario.rol }}</td>
+                    <td>
+                      <span :class="{'text-danger': usuario.rol === 'administrador', 'text-secondary': usuario.rol === 'operario'}">
+                      {{ usuario.rol === 'administrador' ? 'Administrador' : 'Operario' }}
+                      </span>
+                    </td>
                     <td>
                       <button @click="formularioEditarUsuario(usuario.id)" class="btn btn-primary" data-toggle="modal" data-target="#editModal">Editar usuario</button></td>
                     <td>
@@ -176,32 +204,32 @@
                     </tr>
                   </tbody>
               </table>
-              <!-- Modal editar usuario -->
+              <!-- Modal crear usuario -->
               <div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="createModalLabel" aria-hidden="true">
                 <div class="modal-dialog" role="document">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h5 class="modal-title" id="createModalLabel">Creación de usuario</h5>
-                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                      </button>
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="createModalLabel">Creación de usuario</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <label for="email">Email:</label>
+                            <input type="text" class="form-control" v-model="email" />
+                            <label for="password">Contraseña:</label>
+                            <input type="text" class="form-control" v-model="contrasena" />
+                            <label for="rol">Rol:</label>
+                            <select class="form-control" v-model="rol">
+                                <option value="administrador">Administrador</option>
+                                <option value="usuario">Usuario</option>
+                            </select>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                            <button type="button" class="btn btn-primary" @click="crearUsuario">Crear usuario</button>
+                        </div>
                     </div>
-                    <div class="modal-body">
-                      <label for="email">Email:</label>
-                      <input type="text" class="form-control" v-model="email" />
-                      <label for="password">Contraseña:</label>
-                      <input type="text" class="form-control" v-model="contrasena" />
-                      <label for="rol">Rol:</label>
-                      <select class="form-control" v-model="rol">
-                        <option value="administrador">Administrador</option>
-                        <option value="usuario">Usuario</option>
-                      </select>
-                    </div>
-                    <div class="modal-footer">
-                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                      <button type="button" class="btn btn-primary" @click="crearUsuario">Crear usuario</button>
-                    </div>
-                  </div>
                 </div>
               </div>
   

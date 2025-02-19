@@ -8,8 +8,10 @@ let app = new Vue({
         usuario: "", //Json del usuario logueado
         usuario_seleccionado: "", //Json del usuario seleccionado al editar, eliminar...
         usuarios: [], // Lista usuarios
+
         logeado: false, // Booleano que indica si se ha logeado o no
         pantalla: "", //Pantalla actual
+        
         vehiculos: [], // Lista de vehículos
     },
     methods: {
@@ -18,11 +20,13 @@ let app = new Vue({
         },
         mostrarRetirada(){
             this.pantalla = "retirada";
+            this.usuarios = [];
         },
         mostrarUsuarios(){
             this.pantalla = "usuarios";
             this.obtenerUsuarios();
         },
+        // FORMULARIOS USUARIOS
         formularioCrearUsuario(){
             // Cerrar cualquier modal abierto antes de abrir uno nuevo
             $('#createModal').modal('hide');
@@ -40,10 +44,6 @@ let app = new Vue({
                 $('#editModal').modal('show');
               });
             });
-          },
-          guardarCambios() {
-            // Aquí puedes agregar la lógica para guardar los cambios del usuario
-            $('#editModal').modal('hide');
           },
         formularioEliminarUsuario(id){
             // Cerrar cualquier modal abierto antes de abrir uno nuevo
@@ -66,6 +66,8 @@ let app = new Vue({
             .then(response => {
                 if (response.ok) {
                     this.obtenerUsuarios();
+                    this.nuevoLog('Eliminación usuario', 'El administrador ha eliminado al usuario '+this.usuario_seleccionado.email)
+                    this.usuario_seleccionado = {};
                     $('#deleteModal').modal('hide');
                 }
             })
@@ -98,14 +100,16 @@ let app = new Vue({
             .then(data => {
                 this.obtenerUsuarios();
                 $('#editModal').modal('hide');
+                this.nuevoLog('Modificación usuario', 'El administrador ha modificado al usuario '+this.usuario_seleccionado.email)
+                this.usuario_seleccionado = {};
                 console.log('Usuario actualizado correctamente');
             })
             .catch(error => {
                 console.error("Error al editar al usuario:", error);
             });
         },
-        crearUsuario(){
-            fetch(this.url + 'usuarios/', {
+        crearUsuario() {
+            fetch(this.url + 'usuarios', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -114,7 +118,7 @@ let app = new Vue({
                 body: JSON.stringify({
                     email: this.email,
                     rol: this.rol,
-                    password: this.password 
+                    password: this.contrasena // Asegúrate de que el campo se llame 'password'
                 })
             })
             .then(response => {
@@ -129,7 +133,11 @@ let app = new Vue({
             .then(data => {
                 this.obtenerUsuarios();
                 $('#createModal').modal('hide');
-                console.log('Usuario creado correctamente');
+                this.email = "";
+                this.rol = "";
+                this.contrasena = "";
+                this.nuevoLog('Creacion usuario', 'El administrador ha creado un nuevo usuario ')
+                console.log('Usuario creado correctamente' + data);
             })
             .catch(error => {
                 console.error("Error al crear al usuario:", error);
@@ -183,7 +191,6 @@ let app = new Vue({
                 return response.json();
             })
             .then(result => {
-                console.log("Respuesta del servidor:", result);
             })
             .catch(error => {
                 console.error("Ocurrió un error:", error);
