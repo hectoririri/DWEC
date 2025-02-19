@@ -63,11 +63,7 @@
               </div>
       
               <!-- Botón de Inicio de Sesión -->
-              <button
-                type="button"
-                @click="intentoLogin"
-                class="btn btn-primary btn-lg w-100 mt-4"
-              >
+              <button type="button" @click="intentoLogin" class="btn btn-primary btn-lg w-100 mt-4">
                 Iniciar Sesión
               </button>
             </p>
@@ -83,7 +79,7 @@
           <nav>
             <ul>
               <!-- Registro con todas las acciones y listar solo con el listado para el admin -->
-              <li><button type="button" @click="mostrarLiquidacion">Registro Vehículo</button></li>
+              <li><button type="button" @click="mostrarLiquidacion">Liquidaciones</button></li>
               <li v-if="isAdmin()"><button type="button" @click="mostrarRetirada">Retiradas</button></li>
               <li v-if="isAdmin()"><button type="button" @click="mostrarUsuarios">Gestión Usuarios</button></li>
             </ul>
@@ -140,6 +136,7 @@
                     <td>{{ retirada.grua }}</td>
                     <td>{{ retirada.estado }}</td>
                     <td>{{ retirada.fecha }}</td>
+                    <td><button @click="formularioEditarRetirada(retirada.id)" class="btn btn-warning" data-toggle="modal" data-target="#retiradaEditarModal">Editar retirada</button></td>
                     <td><button @click="formularioEliminarRetirada(retirada.id)" class="btn btn-danger" data-toggle="modal" data-target="#retiradaEliminarModal">Eliminar retirada</button></td>
                   </tr>
                 </tbody>
@@ -258,11 +255,11 @@
               </div>
 
               <!-- Eliminar retirada -->
-              <div class="modal fade" id="retiradaCrearModal" tabindex="-1" role="dialog" aria-labelledby="retiradaCrearModalLabel" aria-hidden="true">
+              <div class="modal fade" id="retiradaEliminarModal" tabindex="-1" role="dialog" aria-labelledby="retiradaEliminarModalLabel" aria-hidden="true">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="retiradaCrearModalLabel">Eliminación de retirada</h5>
+                            <h5 class="modal-title" id="retiradaEliminarModalLabel">Eliminación de retirada</h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
@@ -276,8 +273,120 @@
                       </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                            <button type="button" class="btn btn-primary" @click="crearRetirada">Crear retirada</button>
+                            <button type="button" class="btn btn-danger" @click="eliminarRetirada">Eliminar retirada</button>
                         </div>
+                    </div>
+                </div>
+              </div>
+
+              <!-- Editar retirada -->
+              <div class="modal fade" id="retiradaEditarModal" tabindex="-1" role="dialog" aria-labelledby="retiradaEditarModal" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="retiradaEditarModal">Modificación de retirada</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                          <div class="row">
+                            <div class="col-md-12 mb-6">
+                              <label for="id" class="form-label">ID:</label>
+                              <input type="text" v-model="retirada_seleccionada.id" class="form-control" id="id" required>
+                            </div>
+                            <div class="col-md-12 mb-6">
+                              <label for="fecha_entrada" class="form-label">Fecha de Entrada:</label>
+                              <input type="datetime-local" v-model="retirada_seleccionada.fecha_entrada" class="form-control" id="fecha_entrada" required>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-md-12 mb-6">
+                              <label for="fecha_salida" class="form-label">Fecha de Salida:</label>
+                              <input type="datetime-local" v-model="retirada_seleccionada.fecha_salida" class="form-control" id="fecha_salida">
+                            </div>
+                            <div class="col-md-12 mb-6">
+                              <label for="lugar" class="form-label">Lugar:</label>
+                              <input type="text" v-model="retirada_seleccionada.lugar" class="form-control" id="lugar" required>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-md-12 mb-6">
+                              <label for="direccion" class="form-label">Dirección:</label>
+                              <input type="text" v-model="retirada_seleccionada.direccion" class="form-control" id="direccion" required>
+                            </div>
+                            <div class="col-md-12 mb-6">
+                              <label for="agente" class="form-label">Agente:</label>
+                              <input type="text" v-model="retirada_seleccionada.agente" class="form-control" id="agente" required>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-md-12 mb-6">
+                              <label for="matricula" class="form-label">Matrícula:</label>
+                              <input type="text" v-model="retirada_seleccionada.matricula" class="form-control" id="matricula" required>
+                            </div>
+                            <div class="col-md-12 mb-6">
+                              <label for="marca" class="form-label">Marca:</label>
+                              <input type="text" v-model="retirada_seleccionada.marca" class="form-control" id="marca" required>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-md-12 mb-6">
+                              <label for="modelo" class="form-label">Modelo:</label>
+                              <input type="text" v-model="retirada_seleccionada.modelo" class="form-control" id="modelo" required>
+                            </div>
+                            <div class="col-md-12 mb-6">
+                              <label for="color" class="form-label">Color:</label>
+                              <input type="text" v-model="retirada_seleccionada.color" class="form-control" id="color" required>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-md-12 mb-6">
+                              <label for="motivo" class="form-label">Motivo:</label>
+                              <input type="text" v-model="retirada_seleccionada.motivo" class="form-control" id="motivo" required>
+                            </div>
+                            <div class="col-md-12 mb-6">
+                              <label for="tipo_vehiculo" class="form-label">Tipo de Vehículo:</label>
+                              <select id="" v-model="retirada_seleccionada.tipo_vehiculo" class="form-control"  id="tipo_vehiculo" required>
+                                <option value="Motocicleta, aperos, motocarros y similares">Motocicleta, aperos, motocarros y similares</option>
+                                <option value="Turismo hasta 12 cv o Remolques hasta 750 kg">Turismo hasta 12 cv o Remolques hasta 750 kg</option>
+                                <option value="Turismos más de 12 cv o Remolques más de 750 kg">Turismos más de 12 cv o Remolques más de 750 kg</option>
+                                <option value="Vehiculos especiales">Vehículos especiales</option>
+                                <option value="Vehiculos de cortesia">Vehiculos de cortesia</option>
+                                <option value="Chatarra">Chatarra</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-md-12 mb-6">
+                              <label for="grua" class="form-label">Grúa:</label>
+                              <select id="" v-model="retirada_seleccionada.grua" class="form-control"  id="grua" required>
+                                <option value="Grua Este" :selected="retirada_seleccionada.grua === 'Grua Este'">Grua Este</option>
+                                <option value="Grua Norte" :selected="retirada_seleccionada.grua === 'Grua Norte'">Grua Norte</option>
+                                <option value="Grua Ajandemol" :selected="retirada_seleccionada.grua === 'Grua Ajandemol'">Grua Ajandemol</option>
+                                <option value="Grua Omega" :selected="retirada_seleccionada.grua === 'Grua Omega'">Grua Omega</option>
+                                <option value="Grua Sigma" :selected="retirada_seleccionada.grua === 'Grua Sigma'">Grua Sigma</option>
+                              </select>
+                            </div>
+                            <div class="col-md-12 mb-6">
+                              <label for="estado" class="form-label">Estado:</label>
+                              <select v-model="retirada_seleccionada.estado" class="form-control" id="estado" readonly>
+                              <option value="En deposito">En deposito</option>
+                              <option value="Liquidado">Liquidado</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-md-12 mb-6">
+                              <label for="fecha" class="form-label">Fecha:</label>
+                              <input type="datetime-local" v-model="retirada_seleccionada.fecha" class="form-control" id="fecha" required>
+                            </div>
+                          </div>
+                        </div>
+                      <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                          <button type="button" class="btn btn-warning" @click="editarRetirada">Editar retirada</button>
+                      </div>
                     </div>
                 </div>
               </div>

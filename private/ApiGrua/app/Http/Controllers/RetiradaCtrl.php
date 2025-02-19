@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Retirada;
+use App\Models\Vehiculo;
 use Illuminate\Http\Request;
 
 class RetiradaCtrl extends Controller
@@ -11,7 +13,8 @@ class RetiradaCtrl extends Controller
      */
     public function index()
     {
-        //
+        $vehiculos = Retirada::all();
+        return $vehiculos;
     }
 
     /**
@@ -27,7 +30,9 @@ class RetiradaCtrl extends Controller
      */
     public function store(Request $request)
     {
-        //
+        Retirada::create($request->all());
+
+        return response()->json(['message' => 'Retirada creada correctamente'], 201);
     }
 
     /**
@@ -35,7 +40,8 @@ class RetiradaCtrl extends Controller
      */
     public function show(string $id)
     {
-        //
+        $vehiculos = Retirada::find($id);
+        return $vehiculos;
     }
 
     /**
@@ -51,7 +57,12 @@ class RetiradaCtrl extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $retirada = Retirada::find($id);
+        if (!$retirada) {
+            return response()->json(['message' => 'Retirada no encontrada'], 404);
+        }
+        $retirada->update($request->all());
+        return response()->json($retirada, 200);
     }
 
     /**
@@ -59,6 +70,11 @@ class RetiradaCtrl extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $retirada = Retirada::find($id);
+        if (!$retirada) {
+            return response()->json(['message' => 'Retirada no encontrada'], 404);
+        }
+        $retirada->delete();
+        return response()->json(['message' => 'Retirada eliminada correctamente'], 200);
     }
 }

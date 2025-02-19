@@ -2,18 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Vehiculo;
 use Illuminate\Http\Request;
 
-class VehiculoCtrl extends Controller
+class LiquidacionCtrl extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $vehiculos = Vehiculo::all();
-        return $vehiculos;
+        //
     }
 
     /**
@@ -29,9 +27,7 @@ class VehiculoCtrl extends Controller
      */
     public function store(Request $request)
     {
-        Vehiculo::create($request->all());
-
-        return response()->json(['message' => 'Retirada creada correctamente'], 201);
+        //
     }
 
     /**
@@ -39,8 +35,7 @@ class VehiculoCtrl extends Controller
      */
     public function show(string $id)
     {
-        $vehiculos = Vehiculo::find($id);
-        return $vehiculos;
+        //
     }
 
     /**

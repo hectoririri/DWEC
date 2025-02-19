@@ -29,7 +29,7 @@ class Log extends Model
      *
      * @var array<int, string>
      */
-    protected $fillable = ['usuario_id', 'accion', 'descripcion', 'fecha'];
+    protected $guarded = [];
 
 
     /**

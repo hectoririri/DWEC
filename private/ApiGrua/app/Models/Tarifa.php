@@ -30,7 +30,7 @@ class Tarifa extends Model
      *
      * @var array<int, string>
      */
-    protected $fillable = ['opcion_pago', 'importe_retirada', 'importe_deposito', 'horas_gratis', 'costo_por_hora', 'total'];
+    protected $guarded = [];
 
 
     /**

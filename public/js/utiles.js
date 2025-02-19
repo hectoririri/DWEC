@@ -9,9 +9,9 @@ let app = new Vue({
         usuario_seleccionado: "", //Json del usuario seleccionado al editar, eliminar...
         usuarios: [], // Lista usuarios
 
-        retiradas: [], // Lista de vehículos
-        retirada_seleccionada: {},
-        formRetirada: {
+        retiradas: [], // Lista de retiradas
+        retirada_seleccionada: {}, // Json de la retirada seleccionada
+        formRetirada: { // Json de campos formulario creación retirada
             id: '',
             fecha_entrada: '',
             fecha_salida: '',
@@ -52,7 +52,7 @@ let app = new Vue({
 
         // RETIRADAS
         obtenerRetiradas() {
-            fetch(this.url+'vehiculos', {
+            fetch(this.url+'retiradas', {
                 method: 'GET',
             })
                 .then(response => response.json())
@@ -66,7 +66,7 @@ let app = new Vue({
         obtenerRetirada(id){
             console.log(id);
             
-            return fetch(this.url+'vehiculos/'+id, {
+            return fetch(this.url+'retiradas/'+id, {
                 method: 'GET',
             })
                 .then(response => response.json())
@@ -77,9 +77,10 @@ let app = new Vue({
                     console.error("Error al obtener la retirada:", error);
                 });
         },
+
         // CRUD RETIRADAS
         crearRetirada() {
-            fetch(this.url + 'vehiculos', {
+            fetch(this.url + 'retiradas', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -123,21 +124,8 @@ let app = new Vue({
                 console.error("Error al crear la retirada:", error);
             });
         },
-        formularioEliminarRetirada(id){
-            // Cerrar cualquier modal abierto antes de abrir uno nuevo
-            $('#retiradaEliminarModal').modal('hide');
-
-            this.retirada_seleccionada = {};
-
-            this.obtenerRetirada(id).then(() => {
-                // Mostrar el modal solo después de que los datos se hayan cargado
-                Vue.nextTick(() => {
-                  $('#retiradaEliminarModal').modal('show');
-                });
-              });
-        },
-        eliminarUsuario() {
-            fetch(this.url + 'vehiculos/' + this.retirada_seleccionada.id, {
+        eliminarRetirada() {
+            fetch(this.url + 'retiradas/' + this.retirada_seleccionada.id, {
                 method: 'DELETE'
             })
             .then(response => {
@@ -152,6 +140,69 @@ let app = new Vue({
                 console.error("Error al eliminar la retirada:", error);
             });
         },
+        editarRetirada() {
+            fetch(this.url + 'retiradas/' + this.retirada_seleccionada.id, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(this.retirada_seleccionada)
+
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    return response.json().then(data => {
+                        throw new Error(data.message || 'Error al editar la retirada');
+                    });
+                }
+            })
+            .then(data => {
+                this.obtenerRetiradas();
+                $('#retiradaEditarModal').modal('hide');
+                this.nuevoLog('Modificación retirada', 'El administrador ha modificado la retirada '+this.retirada_seleccionada.id)
+                this.retirada_seleccionada = {};
+                console.log('Retirada actualizado correctamente');
+            })
+            .catch(error => {
+                console.error("Error al editar la retirada:", error);
+                console.log(this.retirada_seleccionada);
+                
+            });
+        },
+
+
+        // FORMULARIOS RETIRADAS
+        formularioEliminarRetirada(id){
+            // Cerrar cualquier modal abierto antes de abrir uno nuevo
+            $('#retiradaEliminarModal').modal('hide');
+
+            this.retirada_seleccionada = {};
+
+            this.obtenerRetirada(id).then(() => {
+                // Mostrar el modal solo después de que los datos se hayan cargado
+                Vue.nextTick(() => {
+                  $('#retiradaEliminarModal').modal('show');
+                });
+              });
+        },
+        formularioEditarRetirada(id){
+            // Cerrar cualquier modal abierto antes de abrir uno nuevo
+            $('#retiradaEditarModal').modal('hide');
+
+            this.retirada_seleccionada = {};
+
+            this.obtenerRetirada(id).then(() => {
+                // Mostrar el modal solo después de que los datos se hayan cargado
+                Vue.nextTick(() => {
+                  $('#retiradaEditarModal').modal('show');
+                });
+              });
+        },
+        
+       
 
         // USUARIOS
 
@@ -187,6 +238,7 @@ let app = new Vue({
                 });
               });
         },
+
         // CRUD USUARIOS
         eliminarUsuario() {
             fetch(this.url + 'usuarios/' + this.usuario_seleccionado.id, {
