@@ -13,10 +13,7 @@ class VehiculoCtrl extends Controller
     public function index()
     {
         $vehiculos = Vehiculo::all();
-
-        return response()->json([
-            'vehiculos' => $vehiculos
-        ]);
+        return $vehiculos;
     }
 
     /**
@@ -32,7 +29,9 @@ class VehiculoCtrl extends Controller
      */
     public function store(Request $request)
     {
-        //
+        Vehiculo::create($request->all());
+
+        return response()->json(['message' => 'Retirada creada correctamente'], 201);
     }
 
     /**
@@ -40,7 +39,8 @@ class VehiculoCtrl extends Controller
      */
     public function show(string $id)
     {
-        //
+        $vehiculos = Vehiculo::find($id);
+        return $vehiculos;
     }
 
     /**

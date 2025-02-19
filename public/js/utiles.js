@@ -9,23 +9,152 @@ let app = new Vue({
         usuario_seleccionado: "", //Json del usuario seleccionado al editar, eliminar...
         usuarios: [], // Lista usuarios
 
+        retiradas: [], // Lista de vehículos
+        retirada_seleccionada: {},
+        formRetirada: {
+            id: '',
+            fecha_entrada: '',
+            fecha_salida: '',
+            lugar: '',
+            direccion: '',
+            agente: '',
+            matricula: '',
+            marca: '',
+            modelo: '',
+            color: '',
+            motivo: '',
+            tipo_vehiculo: '',
+            grua: '',
+            estado: 'En deposito',
+            fecha: ''
+        },
+
         logeado: false, // Booleano que indica si se ha logeado o no
         pantalla: "", //Pantalla actual
-        
-        vehiculos: [], // Lista de vehículos
+
     },
     methods: {
-        mostrarRegistro(){
-            this.pantalla = "registro";
+        mostrarLiquidacion(){
+            this.pantalla = "liquidacion";
+            console.log(this.pantalla);
         },
         mostrarRetirada(){
-            this.pantalla = "retirada";
-            this.usuarios = [];
+            this.pantalla = "retiradas";
+            this.obtenerRetiradas();
+            console.log(this.pantalla);
         },
         mostrarUsuarios(){
             this.pantalla = "usuarios";
             this.obtenerUsuarios();
+            console.log(this.pantalla);
+            
         },
+
+        // RETIRADAS
+        obtenerRetiradas() {
+            fetch(this.url+'vehiculos', {
+                method: 'GET',
+            })
+                .then(response => response.json())
+                .then(data => {
+                    this.retiradas = data;
+                })
+                .catch(error => {
+                    console.error("Error al obtener las retiradas:", error);
+                });
+        },
+        obtenerRetirada(id){
+            console.log(id);
+            
+            return fetch(this.url+'vehiculos/'+id, {
+                method: 'GET',
+            })
+                .then(response => response.json())
+                .then(data => {
+                    this.retirada_seleccionada = data;
+                })
+                .catch(error => {
+                    console.error("Error al obtener la retirada:", error);
+                });
+        },
+        // CRUD RETIRADAS
+        crearRetirada() {
+            fetch(this.url + 'vehiculos', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(this.formRetirada)
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    return response.json().then(data => {
+                        throw new Error(data.message || 'Error al crear la retirada');
+                    });
+                }
+            })
+            .then(data => {
+                this.obtenerRetiradas();
+                $('#retiradaCrearModal').modal('hide');
+                this.formRetirada = {
+                    id: '',
+                    fecha_entrada: '',
+                    fecha_salida: '',
+                    lugar: '',
+                    direccion: '',
+                    agente: '',
+                    matricula: '',
+                    marca: '',
+                    modelo: '',
+                    color: '',
+                    motivo: '',
+                    tipo_vehiculo: '',
+                    grua: '',
+                    estado: '',
+                    fecha: ''
+                };
+                this.nuevoLog('Creación retirada', 'Se ha creado una nueva retirada');
+                console.log('Retirada creada correctamente', data);
+            })
+            .catch(error => {
+                console.error("Error al crear la retirada:", error);
+            });
+        },
+        formularioEliminarRetirada(id){
+            // Cerrar cualquier modal abierto antes de abrir uno nuevo
+            $('#retiradaEliminarModal').modal('hide');
+
+            this.retirada_seleccionada = {};
+
+            this.obtenerRetirada(id).then(() => {
+                // Mostrar el modal solo después de que los datos se hayan cargado
+                Vue.nextTick(() => {
+                  $('#retiradaEliminarModal').modal('show');
+                });
+              });
+        },
+        eliminarUsuario() {
+            fetch(this.url + 'vehiculos/' + this.retirada_seleccionada.id, {
+                method: 'DELETE'
+            })
+            .then(response => {
+                if (response.ok) {
+                    this.obtenerRetiradas();
+                    this.nuevoLog('Eliminación retirada', 'El administrador ha eliminado la retirada '+this.usuario_seleccionado.id)
+                    this.retirada_seleccionada = {};
+                    $('#retiradaEliminarModal').modal('hide');
+                }
+            })
+            .catch(error => {
+                console.error("Error al eliminar la retirada:", error);
+            });
+        },
+
+        // USUARIOS
+
         // FORMULARIOS USUARIOS
         formularioCrearUsuario(){
             // Cerrar cualquier modal abierto antes de abrir uno nuevo
@@ -143,6 +272,34 @@ let app = new Vue({
                 console.error("Error al crear al usuario:", error);
             });
         },
+        
+        // RECOGER USUARIOS
+        obtenerUsuarios() {
+            fetch(this.url+'usuarios', {
+                method: 'GET',
+            })
+                .then(response => response.json())
+                .then(data => {
+                    this.usuarios = data;
+                })
+                .catch(error => {
+                    console.error("Error al obtener los usuarios:", error);
+                });
+        },
+        obtenerUsuario(id) {
+            return fetch(this.url + 'usuarios/' + id, {
+                method: 'GET',
+            })
+            .then(response => response.json())
+            .then(data => {
+                this.usuario_seleccionado = data;
+                return data;
+            })
+            .catch(error => {
+                console.error("Error al obtener los usuarios:", error);
+            });
+        },
+
         intentoLogin() {
             fetch(this.url+'usuarios')
                 .then(response => response.json())
@@ -196,31 +353,5 @@ let app = new Vue({
                 console.error("Ocurrió un error:", error);
             });
         },
-        obtenerUsuarios() {
-            fetch(this.url+'usuarios', {
-                method: 'GET',
-            })
-                .then(response => response.json())
-                .then(data => {
-                    this.usuarios = data;
-                })
-                .catch(error => {
-                    console.error("Error al obtener los usuarios:", error);
-                });
-        },
-        obtenerUsuario(id) {
-            return fetch(this.url + 'usuarios/' + id, {
-                method: 'GET',
-            })
-            .then(response => response.json())
-            .then(data => {
-                this.usuario_seleccionado = data;
-                return data;
-            })
-            .catch(error => {
-                console.error("Error al obtener los usuarios:", error);
-            });
-        },
-        
     }
 });

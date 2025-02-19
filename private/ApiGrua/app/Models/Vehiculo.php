@@ -34,15 +34,12 @@ class Vehiculo extends Model
     use SoftDeletes;
     public $timestamps = false;
     protected $perPage = 20;
-
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
-    protected $fillable = ['fecha_entrada', 'fecha_salida', 'lugar', 'direccion', 'agente', 'matricula', 'marca', 'modelo', 'color', 'motivo', 'tipo_vehiculo', 'grua', 'estado', 'fecha'];
-
-
+    protected $table = 'vehiculos';
+    public $incrementing = false;
+    protected $keyType = 'string';
+    protected $primaryKey = 'id';
+    protected $guarded = [];
+    
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
