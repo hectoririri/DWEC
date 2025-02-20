@@ -2,7 +2,7 @@
 -- Host:                         127.0.0.1
 -- Versión del servidor:         10.4.32-MariaDB - mariadb.org binary distribution
 -- SO del servidor:              Win64
--- HeidiSQL Versión:             12.9.0.6999
+-- HeidiSQL Versión:             12.10.0.7000
 -- --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -13,6 +13,26 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+CREATE TABLE IF NOT EXISTS `retiradas` (
+  `id` varchar(500) NOT NULL,
+  `fecha_entrada` datetime DEFAULT NULL,
+  `fecha_salida` datetime DEFAULT NULL,
+  `lugar` varchar(500) DEFAULT NULL,
+  `direccion` varchar(500) DEFAULT NULL,
+  `agente` varchar(500) DEFAULT NULL,
+  `matricula` varchar(500) DEFAULT NULL,
+  `marca` varchar(500) DEFAULT NULL,
+  `modelo` varchar(500) DEFAULT NULL,
+  `color` varchar(500) DEFAULT NULL,
+  `motivo` varchar(500) DEFAULT NULL,
+  `tipo_vehiculo` varchar(500) DEFAULT NULL,
+  `grua` varchar(500) DEFAULT NULL,
+  `estado` varchar(500) DEFAULT 'En depósito',
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
 
 -- Volcando estructura para tabla grua_municipal.liquidacion
 CREATE TABLE IF NOT EXISTS `liquidacion` (
@@ -32,19 +52,29 @@ CREATE TABLE IF NOT EXISTS `liquidacion` (
   `opciones_pago` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_liquidacion_retiradas` (`id_retirada`),
-  CONSTRAINT `FK_liquidacion_retiradas` FOREIGN KEY (`id_retirada`) REFERENCES `retiradas` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `FK_liquidacion_retiradas` FOREIGN KEY (`id_retirada`) REFERENCES `retiradas` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
--- Volcando datos para la tabla grua_municipal.liquidacion: ~7 rows (aproximadamente)
-DELETE FROM `liquidacion`;
-INSERT INTO `liquidacion` (`id`, `id_retirada`, `nombre`, `nif`, `domicilio`, `poblacion`, `provincia`, `permiso`, `fecha`, `agente`, `importe_retirada`, `importe_deposito`, `total`, `opciones_pago`) VALUES
-	(1, 'VHCL0001', 'Juan Pérez', '12345678A', 'Calle Real 123', 'Madrid', 'Madrid', 'B-12345', '2023-10-03 14:30:00', 'Agente01', NULL, NULL, NULL, NULL),
-	(2, 'VHCL0003', 'María García', '87654321B', 'Avenida Principal 45', 'Barcelona', 'Barcelona', 'C-54321', '2023-10-04 16:45:00', 'Agente02', NULL, NULL, NULL, NULL),
-	(3, 'VHCL0003', 'Carlos Rodríguez', '11223344C', 'Plaza Mayor 67', 'Valencia', 'Valencia', 'B-67890', '2023-10-03 10:15:00', 'Agente03', NULL, NULL, NULL, NULL),
-	(5, 'VHCL0007', 'Luis Sánchez', '99887766E', 'Calle Falsa 123', 'Málaga', 'Málaga', 'C-13579', '2025-02-20 00:24:29', 'Manuel Carrasco 023', NULL, NULL, NULL, NULL),
-	(7, 'VHCL0011', 'matriculao', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Metálico'),
-	(8, 'VHCL0004', 'asdasd', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-	(9, 'VHCL0003', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+-- Volcando estructura para tabla grua_municipal.usuarios
+CREATE TABLE IF NOT EXISTS `usuarios` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `email` varchar(500) DEFAULT NULL,
+  `password` varchar(500) DEFAULT NULL,
+  `rol` varchar(500) DEFAULT NULL,
+  `deleted_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+-- Volcando datos para la tabla grua_municipal.usuarios: ~7 rows (aproximadamente)
+INSERT INTO `usuarios` (`id`, `email`, `password`, `rol`, `deleted_at`) VALUES
+	(1, 'admin', 'admin', 'administrador', NULL),
+	(2, 'haefcna@maskdm', 'caca', 'usuario', NULL),
+	(3, 'pedro@example.com', 'securepass', 'administrador', NULL),
+	(4, 'laura@example.com', 'mypassword', 'usuario', NULL),
+	(5, 'hecnugar@gmail.com', '$2y$12$G6sPTo9d38P/drKb2mTahuXnloJ0WoJZorhnmHrnpwWv4jPEUubHW', 'administrador', '2025-02-19 02:23:26'),
+	(6, 'hecnugarr@gmail.com', 'asd123', 'usuario', '2025-02-19 02:23:24'),
+	(7, 'caca@gmail.com', 'Prueba123456', 'administrador', '2025-02-19 02:27:21');
+
 
 -- Volcando estructura para tabla grua_municipal.logs
 CREATE TABLE IF NOT EXISTS `logs` (
@@ -58,10 +88,10 @@ CREATE TABLE IF NOT EXISTS `logs` (
   PRIMARY KEY (`id`),
   KEY `log_usuario_id_fk` (`usuario_id`),
   CONSTRAINT `log_usuario_id_fk` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=280 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=264 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
--- Volcando datos para la tabla grua_municipal.logs: ~279 rows (aproximadamente)
-DELETE FROM `logs`;
+
+-- Volcando datos para la tabla grua_municipal.logs: ~241 rows (aproximadamente)
 INSERT INTO `logs` (`id`, `usuario_id`, `accion`, `descripcion`, `fecha`, `created_at`, `updated_at`) VALUES
 	(1, 1, 'Loggin', 'El usuario ha iniciado sesión', '2025-02-17 02:31:46', '2025-02-17 02:31:46', '2025-02-17 02:31:46'),
 	(2, 1, 'Loggin', 'El usuario ha iniciado sesión', '2025-02-17 02:39:06', '2025-02-17 02:39:06', '2025-02-17 02:39:06'),
@@ -325,58 +355,7 @@ INSERT INTO `logs` (`id`, `usuario_id`, `accion`, `descripcion`, `fecha`, `creat
 	(260, 1, 'Creación liquidacion', 'Se ha creado la liquidacionundefined', '2025-02-20 05:18:57', '2025-02-20 04:18:57', '2025-02-20 04:18:57'),
 	(261, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 05:32:34', '2025-02-20 04:32:34', '2025-02-20 04:32:34'),
 	(262, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 05:32:42', '2025-02-20 04:32:43', '2025-02-20 04:32:43'),
-	(263, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 05:33:37', '2025-02-20 04:33:37', '2025-02-20 04:33:37'),
-	(264, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 12:09:32', '2025-02-20 10:09:32', '2025-02-20 10:09:32'),
-	(265, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 12:13:16', '2025-02-20 10:13:16', '2025-02-20 10:13:16'),
-	(266, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 12:17:18', '2025-02-20 10:17:19', '2025-02-20 10:17:19'),
-	(267, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 12:28:27', '2025-02-20 10:28:28', '2025-02-20 10:28:28'),
-	(268, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 12:28:53', '2025-02-20 10:28:53', '2025-02-20 10:28:53'),
-	(269, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 12:29:00', '2025-02-20 10:29:00', '2025-02-20 10:29:00'),
-	(270, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 12:29:14', '2025-02-20 10:29:14', '2025-02-20 10:29:14'),
-	(271, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 12:29:24', '2025-02-20 10:29:24', '2025-02-20 10:29:24'),
-	(272, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 12:29:41', '2025-02-20 10:29:42', '2025-02-20 10:29:42'),
-	(273, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 12:39:52', '2025-02-20 10:39:53', '2025-02-20 10:39:53'),
-	(274, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 12:40:09', '2025-02-20 10:40:09', '2025-02-20 10:40:09'),
-	(275, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 12:40:22', '2025-02-20 10:40:22', '2025-02-20 10:40:22'),
-	(276, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 12:41:37', '2025-02-20 10:41:37', '2025-02-20 10:41:37'),
-	(277, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 12:42:37', '2025-02-20 10:42:38', '2025-02-20 10:42:38'),
-	(278, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 12:48:49', '2025-02-20 10:48:49', '2025-02-20 10:48:49'),
-	(279, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 12:50:00', '2025-02-20 10:50:00', '2025-02-20 10:50:00'),
-	(280, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 13:23:54', '2025-02-20 11:23:54', '2025-02-20 11:23:54'),
-	(281, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 13:25:05', '2025-02-20 11:25:05', '2025-02-20 11:25:05'),
-	(282, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 13:26:33', '2025-02-20 11:26:33', '2025-02-20 11:26:33'),
-	(283, 1, 'Creación liquidacion', 'Se ha creado la liquidacionundefined', '2025-02-20 13:26:38', '2025-02-20 11:26:38', '2025-02-20 11:26:38');
-
--- Volcando estructura para tabla grua_municipal.retiradas
-CREATE TABLE IF NOT EXISTS `retiradas` (
-  `id` varchar(500) NOT NULL,
-  `fecha_entrada` datetime DEFAULT NULL,
-  `fecha_salida` datetime DEFAULT NULL,
-  `lugar` varchar(500) DEFAULT NULL,
-  `direccion` varchar(500) DEFAULT NULL,
-  `agente` varchar(500) DEFAULT NULL,
-  `matricula` varchar(500) DEFAULT NULL,
-  `marca` varchar(500) DEFAULT NULL,
-  `modelo` varchar(500) DEFAULT NULL,
-  `color` varchar(500) DEFAULT NULL,
-  `motivo` varchar(500) DEFAULT NULL,
-  `tipo_vehiculo` varchar(500) DEFAULT NULL,
-  `grua` varchar(500) DEFAULT NULL,
-  `estado` varchar(500) DEFAULT 'En depósito',
-  `deleted_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
-
--- Volcando datos para la tabla grua_municipal.retiradas: ~7 rows (aproximadamente)
-DELETE FROM `retiradas`;
-INSERT INTO `retiradas` (`id`, `fecha_entrada`, `fecha_salida`, `lugar`, `direccion`, `agente`, `matricula`, `marca`, `modelo`, `color`, `motivo`, `tipo_vehiculo`, `grua`, `estado`, `deleted_at`) VALUES
-	('VHCL0001', '2023-10-01 10:00:00', '2023-10-03 12:00:00', 'Plaza Mayor', 'Calle Real, 12', 'Agente01', '1234ABC', 'Toyota', 'Corolla', 'Rojo', 'Estacionamiento indebido', 'Turismo', 'Grua01', 'Retirado', NULL),
-	('VHCL0002', '2023-10-02 11:30:00', '2023-10-04 14:30:00', 'Parque Central', 'Avenida Principal, 5', 'Agente02', '5678XYZ', 'Ford', 'Focus', 'Azul', 'Accidente', 'Turismo', 'Grua02', 'Retirado', NULL),
-	('VHCL0003', '2023-10-03 09:15:00', NULL, 'Zona Industrial', 'Calle Industria, 7', 'Agente03', '9012DEF', 'Renault', 'Clio', 'Blanco', 'Abandono', 'Turismo', 'Grua03', 'Retirado', NULL),
-	('VHCL0004', '2023-10-04 13:45:00', NULL, 'Centro Comercial', 'Calle Comercio, 10', 'Agente04', '3456GHI', 'Seat', 'Ibiza', 'Negro', 'Obstrucción de tráfico', 'Turismo', 'Grua04', 'Retirado', NULL),
-	('VHCL0005', NULL, NULL, NULL, 'asd', 'asd', 'asd', 'asd', NULL, NULL, NULL, NULL, NULL, 'En depósito', '2025-02-19 22:50:44'),
-	('VHCL0007', '2025-02-28 12:32:00', NULL, 'Andalusia', 'Calle Falsa', 'Manuel Carrasco 023', '8346FGM', 'citroen', 'citroen c4', 'verde', 'mal aparcao', 'Turismo hasta 12 cv o Remolques hasta 750 kg', 'Grua Omega', 'En depósito', '2025-02-20 03:37:46'),
-	('VHCL0011', '2025-02-20 13:33:00', NULL, 'LUgar', 'direccion', 'agente', 'matricula', 'marca', 'modelo', 'color', 'motivo', 'Turismo hasta 12 cv o Remolques hasta 750 kg', 'Grua Norte', 'Retirado', NULL);
+	(263, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 05:33:37', '2025-02-20 04:33:37', '2025-02-20 04:33:37');
 
 -- Volcando estructura para tabla grua_municipal.tarifas
 CREATE TABLE IF NOT EXISTS `tarifas` (
@@ -387,30 +366,8 @@ CREATE TABLE IF NOT EXISTS `tarifas` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 -- Volcando datos para la tabla grua_municipal.tarifas: ~1 rows (aproximadamente)
-DELETE FROM `tarifas`;
 INSERT INTO `tarifas` (`id`, `horas_gratis`, `costo_por_hora`) VALUES
 	(1, 24, 4);
-
--- Volcando estructura para tabla grua_municipal.usuarios
-CREATE TABLE IF NOT EXISTS `usuarios` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `email` varchar(500) DEFAULT NULL,
-  `password` varchar(500) DEFAULT NULL,
-  `rol` varchar(500) DEFAULT NULL,
-  `deleted_at` datetime DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
-
--- Volcando datos para la tabla grua_municipal.usuarios: ~7 rows (aproximadamente)
-DELETE FROM `usuarios`;
-INSERT INTO `usuarios` (`id`, `email`, `password`, `rol`, `deleted_at`) VALUES
-	(1, 'admin', 'admin', 'administrador', NULL),
-	(2, 'haefcna@maskdm', 'caca', 'usuario', NULL),
-	(3, 'pedro@example.com', 'securepass', 'administrador', NULL),
-	(4, 'laura@example.com', 'mypassword', 'usuario', NULL),
-	(5, 'hecnugar@gmail.com', '$2y$12$G6sPTo9d38P/drKb2mTahuXnloJ0WoJZorhnmHrnpwWv4jPEUubHW', 'administrador', '2025-02-19 02:23:26'),
-	(6, 'hecnugarr@gmail.com', 'asd123', 'usuario', '2025-02-19 02:23:24'),
-	(7, 'caca@gmail.com', 'Prueba123456', 'administrador', '2025-02-19 02:27:21');
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
