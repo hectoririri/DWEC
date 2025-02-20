@@ -21,9 +21,8 @@ USE `grua_municipal`;
 
 -- Volcando estructura para tabla grua_municipal.liquidacion
 CREATE TABLE IF NOT EXISTS `liquidacion` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `id_retirada` varchar(500) NOT NULL,
-  `id_tarifa` bigint(20) DEFAULT NULL,
   `nombre` varchar(500) DEFAULT NULL,
   `nif` varchar(500) DEFAULT NULL,
   `domicilio` varchar(500) DEFAULT NULL,
@@ -32,21 +31,24 @@ CREATE TABLE IF NOT EXISTS `liquidacion` (
   `permiso` varchar(500) DEFAULT NULL,
   `fecha` datetime DEFAULT NULL,
   `agente` varchar(500) DEFAULT NULL,
+  `importe_retirada` decimal(20,2) DEFAULT NULL,
+  `importe_deposito` decimal(20,2) DEFAULT NULL,
+  `total` decimal(20,2) DEFAULT NULL,
+  `opciones_pago` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `retiradas_id_tarifa_fk` (`id_tarifa`),
   KEY `FK_liquidacion_retiradas` (`id_retirada`),
-  CONSTRAINT `FK_liquidacion_retiradas` FOREIGN KEY (`id_retirada`) REFERENCES `retiradas` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `retiradas_id_tarifa_fk` FOREIGN KEY (`id_tarifa`) REFERENCES `tarifas` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+  CONSTRAINT `FK_liquidacion_retiradas` FOREIGN KEY (`id_retirada`) REFERENCES `retiradas` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
--- Volcando datos para la tabla grua_municipal.liquidacion: ~5 rows (aproximadamente)
+-- Volcando datos para la tabla grua_municipal.liquidacion: ~4 rows (aproximadamente)
 DELETE FROM `liquidacion`;
-INSERT INTO `liquidacion` (`id`, `id_retirada`, `id_tarifa`, `nombre`, `nif`, `domicilio`, `poblacion`, `provincia`, `permiso`, `fecha`, `agente`) VALUES
-	(1, 'VHCL0001', 1, 'Juan Pérez', '12345678A', 'Calle Real 123', 'Madrid', 'Madrid', 'B-12345', '2023-10-03 14:30:00', 'Agente01'),
-	(2, 'VHCL0002', 2, 'María García', '87654321B', 'Avenida Principal 45', 'Barcelona', 'Barcelona', 'C-54321', '2023-10-04 16:45:00', 'Agente02'),
-	(3, 'VHCL0003', 3, 'Carlos Rodríguez', '11223344C', 'Plaza Mayor 67', 'Valencia', 'Valencia', 'B-67890', '2023-10-03 10:15:00', 'Agente03'),
-	(4, 'VHCL0004', 4, 'Ana Martínez', '44556677D', 'Calle Comercio 89', 'Sevilla', 'Sevilla', 'B-98765', '2023-10-04 15:45:00', 'Agente04'),
-	(5, 'VHCL0007', 5, 'Luis Sánchez', '99887766E', 'Calle Falsa 123', 'Málaga', 'Málaga', 'C-13579', '2025-02-20 00:24:29', 'Manuel Carrasco 023');
+INSERT INTO `liquidacion` (`id`, `id_retirada`, `nombre`, `nif`, `domicilio`, `poblacion`, `provincia`, `permiso`, `fecha`, `agente`, `importe_retirada`, `importe_deposito`, `total`, `opciones_pago`) VALUES
+	(1, 'VHCL0001', 'Juan Pérez', '12345678A', 'Calle Real 123', 'Madrid', 'Madrid', 'B-12345', '2023-10-03 14:30:00', 'Agente01', NULL, NULL, NULL, NULL),
+	(2, 'VHCL0003', 'María García', '87654321B', 'Avenida Principal 45', 'Barcelona', 'Barcelona', 'C-54321', '2023-10-04 16:45:00', 'Agente02', NULL, NULL, NULL, NULL),
+	(3, 'VHCL0003', 'Carlos Rodríguez', '11223344C', 'Plaza Mayor 67', 'Valencia', 'Valencia', 'B-67890', '2023-10-03 10:15:00', 'Agente03', NULL, NULL, NULL, NULL),
+	(5, 'VHCL0007', 'Luis Sánchez', '99887766E', 'Calle Falsa 123', 'Málaga', 'Málaga', 'C-13579', '2025-02-20 00:24:29', 'Manuel Carrasco 023', NULL, NULL, NULL, NULL),
+	(7, 'VHCL0011', 'matriculao', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Metálico'),
+	(8, 'VHCL0004', 'asdasd', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 -- Volcando estructura para tabla grua_municipal.logs
 CREATE TABLE IF NOT EXISTS `logs` (
@@ -60,9 +62,9 @@ CREATE TABLE IF NOT EXISTS `logs` (
   PRIMARY KEY (`id`),
   KEY `log_usuario_id_fk` (`usuario_id`),
   CONSTRAINT `log_usuario_id_fk` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=191 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=264 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
--- Volcando datos para la tabla grua_municipal.logs: ~190 rows (aproximadamente)
+-- Volcando datos para la tabla grua_municipal.logs: ~241 rows (aproximadamente)
 DELETE FROM `logs`;
 INSERT INTO `logs` (`id`, `usuario_id`, `accion`, `descripcion`, `fecha`, `created_at`, `updated_at`) VALUES
 	(1, 1, 'Loggin', 'El usuario ha iniciado sesión', '2025-02-17 02:31:46', '2025-02-17 02:31:46', '2025-02-17 02:31:46'),
@@ -254,7 +256,80 @@ INSERT INTO `logs` (`id`, `usuario_id`, `accion`, `descripcion`, `fecha`, `creat
 	(187, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 01:11:14', '2025-02-20 00:11:14', '2025-02-20 00:11:14'),
 	(188, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 01:12:13', '2025-02-20 00:12:13', '2025-02-20 00:12:13'),
 	(189, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 01:14:24', '2025-02-20 00:14:24', '2025-02-20 00:14:24'),
-	(190, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 01:15:33', '2025-02-20 00:15:33', '2025-02-20 00:15:33');
+	(190, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 01:15:33', '2025-02-20 00:15:33', '2025-02-20 00:15:33'),
+	(191, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 01:45:35', '2025-02-20 00:45:35', '2025-02-20 00:45:35'),
+	(192, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 01:46:16', '2025-02-20 00:46:16', '2025-02-20 00:46:16'),
+	(193, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 01:47:34', '2025-02-20 00:47:34', '2025-02-20 00:47:34'),
+	(194, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 01:48:22', '2025-02-20 00:48:22', '2025-02-20 00:48:22'),
+	(195, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 01:48:27', '2025-02-20 00:48:27', '2025-02-20 00:48:27'),
+	(196, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 02:16:13', '2025-02-20 01:16:14', '2025-02-20 01:16:14'),
+	(197, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 02:17:57', '2025-02-20 01:17:57', '2025-02-20 01:17:57'),
+	(198, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 02:18:22', '2025-02-20 01:18:22', '2025-02-20 01:18:22'),
+	(199, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 02:21:13', '2025-02-20 01:21:14', '2025-02-20 01:21:14'),
+	(200, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 02:22:00', '2025-02-20 01:22:00', '2025-02-20 01:22:00'),
+	(201, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 02:26:15', '2025-02-20 01:26:15', '2025-02-20 01:26:15'),
+	(202, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 02:28:36', '2025-02-20 01:28:36', '2025-02-20 01:28:36'),
+	(203, 1, 'Eliminación liquidación', 'El administrador ha eliminado la liquidación undefined', '2025-02-20 02:30:26', '2025-02-20 01:30:26', '2025-02-20 01:30:26'),
+	(204, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 02:33:32', '2025-02-20 01:33:32', '2025-02-20 01:33:32'),
+	(205, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 02:34:25', '2025-02-20 01:34:25', '2025-02-20 01:34:25'),
+	(206, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 02:36:03', '2025-02-20 01:36:04', '2025-02-20 01:36:04'),
+	(207, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 02:36:35', '2025-02-20 01:36:35', '2025-02-20 01:36:35'),
+	(208, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 02:36:56', '2025-02-20 01:36:56', '2025-02-20 01:36:56'),
+	(209, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 02:37:05', '2025-02-20 01:37:05', '2025-02-20 01:37:05'),
+	(210, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 02:39:39', '2025-02-20 01:39:39', '2025-02-20 01:39:39'),
+	(211, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 02:57:25', '2025-02-20 01:57:25', '2025-02-20 01:57:25'),
+	(212, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 02:57:35', '2025-02-20 01:57:36', '2025-02-20 01:57:36'),
+	(213, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 03:09:26', '2025-02-20 02:09:26', '2025-02-20 02:09:26'),
+	(214, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 03:09:57', '2025-02-20 02:09:58', '2025-02-20 02:09:58'),
+	(215, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 03:10:36', '2025-02-20 02:10:36', '2025-02-20 02:10:36'),
+	(216, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 03:13:19', '2025-02-20 02:13:19', '2025-02-20 02:13:19'),
+	(217, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 03:13:36', '2025-02-20 02:13:36', '2025-02-20 02:13:36'),
+	(218, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 03:16:34', '2025-02-20 02:16:34', '2025-02-20 02:16:34'),
+	(219, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 03:16:51', '2025-02-20 02:16:51', '2025-02-20 02:16:51'),
+	(220, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 03:17:15', '2025-02-20 02:17:15', '2025-02-20 02:17:15'),
+	(221, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 03:17:59', '2025-02-20 02:17:59', '2025-02-20 02:17:59'),
+	(222, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 03:18:20', '2025-02-20 02:18:20', '2025-02-20 02:18:20'),
+	(223, 1, 'Eliminación liquidación', 'El administrador ha eliminado la liquidación 4', '2025-02-20 03:18:49', '2025-02-20 02:18:49', '2025-02-20 02:18:49'),
+	(224, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 03:20:39', '2025-02-20 02:20:39', '2025-02-20 02:20:39'),
+	(225, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 03:20:48', '2025-02-20 02:20:48', '2025-02-20 02:20:48'),
+	(226, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 03:23:15', '2025-02-20 02:23:15', '2025-02-20 02:23:15'),
+	(227, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 03:26:10', '2025-02-20 02:26:10', '2025-02-20 02:26:10'),
+	(228, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 03:26:44', '2025-02-20 02:26:45', '2025-02-20 02:26:45'),
+	(229, 1, 'Creación liquidacion', 'Se ha creado la liquidacionundefined', '2025-02-20 03:26:48', '2025-02-20 02:26:48', '2025-02-20 02:26:48'),
+	(230, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 03:40:02', '2025-02-20 02:40:02', '2025-02-20 02:40:02'),
+	(231, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 03:40:36', '2025-02-20 02:40:36', '2025-02-20 02:40:36'),
+	(232, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 03:40:48', '2025-02-20 02:40:48', '2025-02-20 02:40:48'),
+	(233, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 03:41:52', '2025-02-20 02:41:52', '2025-02-20 02:41:52'),
+	(234, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 03:43:15', '2025-02-20 02:43:15', '2025-02-20 02:43:15'),
+	(235, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 03:44:12', '2025-02-20 02:44:12', '2025-02-20 02:44:12'),
+	(236, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 03:45:06', '2025-02-20 02:45:06', '2025-02-20 02:45:06'),
+	(237, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 03:46:09', '2025-02-20 02:46:10', '2025-02-20 02:46:10'),
+	(238, 1, 'Modificación liquidacion', 'El administrador ha modificado la liquidacion 6', '2025-02-20 04:32:26', '2025-02-20 03:32:26', '2025-02-20 03:32:26'),
+	(239, 1, 'Modificación liquidacion', 'El administrador ha modificado la liquidacion 6', '2025-02-20 04:32:56', '2025-02-20 03:32:56', '2025-02-20 03:32:56'),
+	(240, 1, 'Eliminación retirada', 'El administrador ha eliminado la retirada VHCL0007', '2025-02-20 04:37:46', '2025-02-20 03:37:46', '2025-02-20 03:37:46'),
+	(241, 1, 'Eliminación liquidación', 'El administrador ha eliminado la liquidación 6', '2025-02-20 04:37:57', '2025-02-20 03:37:57', '2025-02-20 03:37:57'),
+	(242, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 04:40:43', '2025-02-20 03:40:43', '2025-02-20 03:40:43'),
+	(243, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 04:42:33', '2025-02-20 03:42:33', '2025-02-20 03:42:33'),
+	(244, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 04:43:26', '2025-02-20 03:43:26', '2025-02-20 03:43:26'),
+	(245, 1, 'Creación retirada', 'Se ha creado la retiradaVHCL0011', '2025-02-20 04:43:58', '2025-02-20 03:43:58', '2025-02-20 03:43:58'),
+	(246, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 04:45:31', '2025-02-20 03:45:31', '2025-02-20 03:45:31'),
+	(247, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 04:46:35', '2025-02-20 03:46:35', '2025-02-20 03:46:35'),
+	(248, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 04:46:59', '2025-02-20 03:46:59', '2025-02-20 03:46:59'),
+	(249, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 04:48:35', '2025-02-20 03:48:35', '2025-02-20 03:48:35'),
+	(250, 1, 'Modificación liquidacion', 'El administrador ha modificado la liquidacion 2', '2025-02-20 04:48:57', '2025-02-20 03:48:57', '2025-02-20 03:48:57'),
+	(251, 1, 'Modificación liquidacion', 'El administrador ha modificado la liquidacion 2', '2025-02-20 04:49:21', '2025-02-20 03:49:21', '2025-02-20 03:49:21'),
+	(252, 1, 'Creación liquidacion', 'Se ha creado la liquidacionundefined', '2025-02-20 04:49:45', '2025-02-20 03:49:45', '2025-02-20 03:49:45'),
+	(253, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 04:57:35', '2025-02-20 03:57:35', '2025-02-20 03:57:35'),
+	(254, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 05:04:24', '2025-02-20 04:04:25', '2025-02-20 04:04:25'),
+	(255, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 05:05:54', '2025-02-20 04:05:54', '2025-02-20 04:05:54'),
+	(256, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 05:06:18', '2025-02-20 04:06:18', '2025-02-20 04:06:18'),
+	(257, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 05:12:16', '2025-02-20 04:12:17', '2025-02-20 04:12:17'),
+	(258, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 05:17:21', '2025-02-20 04:17:21', '2025-02-20 04:17:21'),
+	(259, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 05:18:03', '2025-02-20 04:18:03', '2025-02-20 04:18:03'),
+	(260, 1, 'Creación liquidacion', 'Se ha creado la liquidacionundefined', '2025-02-20 05:18:57', '2025-02-20 04:18:57', '2025-02-20 04:18:57'),
+	(261, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 05:32:34', '2025-02-20 04:32:34', '2025-02-20 04:32:34'),
+	(262, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 05:32:42', '2025-02-20 04:32:43', '2025-02-20 04:32:43'),
+	(263, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 05:33:37', '2025-02-20 04:33:37', '2025-02-20 04:33:37');
 
 -- Volcando estructura para tabla grua_municipal.retiradas
 CREATE TABLE IF NOT EXISTS `retiradas` (
@@ -272,41 +347,33 @@ CREATE TABLE IF NOT EXISTS `retiradas` (
   `tipo_vehiculo` varchar(500) DEFAULT NULL,
   `grua` varchar(500) DEFAULT NULL,
   `estado` varchar(500) DEFAULT 'En depósito',
-  `fecha` datetime DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
--- Volcando datos para la tabla grua_municipal.retiradas: ~6 rows (aproximadamente)
+-- Volcando datos para la tabla grua_municipal.retiradas: ~7 rows (aproximadamente)
 DELETE FROM `retiradas`;
-INSERT INTO `retiradas` (`id`, `fecha_entrada`, `fecha_salida`, `lugar`, `direccion`, `agente`, `matricula`, `marca`, `modelo`, `color`, `motivo`, `tipo_vehiculo`, `grua`, `estado`, `fecha`, `deleted_at`) VALUES
-	('VHCL0001', '2023-10-01 10:00:00', '2023-10-03 12:00:00', 'Plaza Mayor', 'Calle Real, 12', 'Agente01', '1234ABC', 'Toyota', 'Corolla', 'Rojo', 'Estacionamiento indebido', 'Turismo', 'Grua01', 'Retirado', '2023-10-01 10:00:00', NULL),
-	('VHCL0002', '2023-10-02 11:30:00', '2023-10-04 14:30:00', 'Parque Central', 'Avenida Principal, 5', 'Agente02', '5678XYZ', 'Ford', 'Focus', 'Azul', 'Accidente', 'Turismo', 'Grua02', 'Retirado', '2023-10-02 11:30:00', NULL),
-	('VHCL0003', '2023-10-03 09:15:00', NULL, 'Zona Industrial', 'Calle Industria, 7', 'Agente03', '9012DEF', 'Renault', 'Clio', 'Blanco', 'Abandono', 'Turismo', 'Grua03', 'En depósito', '2023-10-03 09:15:00', NULL),
-	('VHCL0004', '2023-10-04 13:45:00', NULL, 'Centro Comercial', 'Calle Comercio, 10', 'Agente04', '3456GHI', 'Seat', 'Ibiza', 'Negro', 'Obstrucción de tráfico', 'Turismo', 'Grua04', 'En depósito', '2023-10-04 13:45:00', NULL),
-	('VHCL0005', NULL, NULL, NULL, 'asd', 'asd', 'asd', 'asd', NULL, NULL, NULL, NULL, NULL, 'En deposito', NULL, '2025-02-19 22:50:44'),
-	('VHCL0007', '2025-02-28 12:32:00', NULL, 'Andalusia', 'Calle Falsa', 'Manuel Carrasco 023', '8346FGM', 'citroen', 'citroen c4', 'verde', 'mal aparcao', 'Turismo hasta 12 cv o Remolques hasta 750 kg', 'Grua Omega', 'En deposito', '2025-02-20 00:16:00', NULL);
+INSERT INTO `retiradas` (`id`, `fecha_entrada`, `fecha_salida`, `lugar`, `direccion`, `agente`, `matricula`, `marca`, `modelo`, `color`, `motivo`, `tipo_vehiculo`, `grua`, `estado`, `deleted_at`) VALUES
+	('VHCL0001', '2023-10-01 10:00:00', '2023-10-03 12:00:00', 'Plaza Mayor', 'Calle Real, 12', 'Agente01', '1234ABC', 'Toyota', 'Corolla', 'Rojo', 'Estacionamiento indebido', 'Turismo', 'Grua01', 'Retirado', NULL),
+	('VHCL0002', '2023-10-02 11:30:00', '2023-10-04 14:30:00', 'Parque Central', 'Avenida Principal, 5', 'Agente02', '5678XYZ', 'Ford', 'Focus', 'Azul', 'Accidente', 'Turismo', 'Grua02', 'Retirado', NULL),
+	('VHCL0003', '2023-10-03 09:15:00', NULL, 'Zona Industrial', 'Calle Industria, 7', 'Agente03', '9012DEF', 'Renault', 'Clio', 'Blanco', 'Abandono', 'Turismo', 'Grua03', 'En depósito', NULL),
+	('VHCL0004', '2023-10-04 13:45:00', NULL, 'Centro Comercial', 'Calle Comercio, 10', 'Agente04', '3456GHI', 'Seat', 'Ibiza', 'Negro', 'Obstrucción de tráfico', 'Turismo', 'Grua04', 'Retirado', NULL),
+	('VHCL0005', NULL, NULL, NULL, 'asd', 'asd', 'asd', 'asd', NULL, NULL, NULL, NULL, NULL, 'En depósito', '2025-02-19 22:50:44'),
+	('VHCL0007', '2025-02-28 12:32:00', NULL, 'Andalusia', 'Calle Falsa', 'Manuel Carrasco 023', '8346FGM', 'citroen', 'citroen c4', 'verde', 'mal aparcao', 'Turismo hasta 12 cv o Remolques hasta 750 kg', 'Grua Omega', 'En depósito', '2025-02-20 03:37:46'),
+	('VHCL0011', '2025-02-20 13:33:00', NULL, 'LUgar', 'direccion', 'agente', 'matricula', 'marca', 'modelo', 'color', 'motivo', 'Turismo hasta 12 cv o Remolques hasta 750 kg', 'Grua Norte', 'Retirado', NULL);
 
 -- Volcando estructura para tabla grua_municipal.tarifas
 CREATE TABLE IF NOT EXISTS `tarifas` (
   `id` bigint(20) NOT NULL,
-  `opcion_pago` varchar(500) DEFAULT NULL,
-  `importe_retirada` float DEFAULT NULL,
-  `importe_deposito` float DEFAULT NULL,
   `horas_gratis` float DEFAULT NULL,
   `costo_por_hora` float DEFAULT NULL,
-  `total` float DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
--- Volcando datos para la tabla grua_municipal.tarifas: ~5 rows (aproximadamente)
+-- Volcando datos para la tabla grua_municipal.tarifas: ~1 rows (aproximadamente)
 DELETE FROM `tarifas`;
-INSERT INTO `tarifas` (`id`, `opcion_pago`, `importe_retirada`, `importe_deposito`, `horas_gratis`, `costo_por_hora`, `total`) VALUES
-	(1, 'Efectivo', 80, 20, 2, 5, 100),
-	(2, 'Tarjeta', 80, 15, 3, 4.5, 95),
-	(3, 'Transferencia', 85, 25, 1, 6, 110),
-	(4, 'Efectivo', 90, 30, 2, 5.5, 120),
-	(5, 'Tarjeta', 75, 20, 4, 4, 95);
+INSERT INTO `tarifas` (`id`, `horas_gratis`, `costo_por_hora`) VALUES
+	(1, 24, 4);
 
 -- Volcando estructura para tabla grua_municipal.usuarios
 CREATE TABLE IF NOT EXISTS `usuarios` (
