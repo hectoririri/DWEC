@@ -73,7 +73,7 @@ let app = new Vue({
         currentSortDirLiquidaciones: 'asc',
         columnsLiquidaciones: [
             { label: 'ID', field: 'id' },
-            { label: 'Retirada', field: 'id_retirada' },
+            { label: 'Vehiculo', field: 'id_vehiculo' },
             { label: 'Nombre', field: 'nombre' },
             { label: 'NIF', field: 'nif' },
             { label: 'Domicilio', field: 'domicilio' },
@@ -244,28 +244,6 @@ let app = new Vue({
         }
     },
     methods: {
-        // Sort method for retiradas
-        sortByRetiradas(field) {
-            if (field === this.currentSortRetiradas) {
-                this.currentSortDirRetiradas = this.currentSortDirRetiradas === 'asc' ? 'desc' : 'asc';
-            }
-            this.currentSortRetiradas = field;
-        },
-        // Sort method for liquidaciones
-        sortByLiquidaciones(field) {
-            if (field === this.currentSortLiquidaciones) {
-                this.currentSortDirLiquidaciones = this.currentSortDirLiquidaciones === 'asc' ? 'desc' : 'asc';
-            }
-            this.currentSortLiquidaciones = field;
-        },
-        // Sort method
-        sortBy(field) {
-            if (field === this.currentSort) {
-                this.currentSortDir = this.currentSortDir === 'asc' ? 'desc' : 'asc';
-            }
-            this.currentSort = field;
-        },
-
         mostrarLiquidacion(){
             // Cambiamos pantalla a liquidación y cargamos la tabla
             this.pantalla = "liquidacion";
@@ -283,7 +261,7 @@ let app = new Vue({
             
         },
 
-        // LIQUIDACIONES
+        // LIQUIDACIONES (Ahora vehiculos)
         obtenerLiquidaciones(){
             fetch(this.url+'liquidaciones', {
                 method: 'GET',
@@ -801,6 +779,28 @@ let app = new Vue({
             .catch(error => {
                 console.error("Ocurrió un error:", error);
             })
+        },
+        // Sort method for retiradas
+        sortByRetiradas(field) {
+            if (field === this.currentSortRetiradas) {
+                this.currentSortDirRetiradas = this.currentSortDirRetiradas === 'asc' ? 'desc' : 'asc';
+            }
+            this.currentSortRetiradas = field;
+        },
+
+        // Sort method for liquidaciones
+        sortByLiquidaciones(field) {
+            if (field === this.currentSortLiquidaciones) {
+                this.currentSortDirLiquidaciones = this.currentSortDirLiquidaciones === 'asc' ? 'desc' : 'asc';
+            }
+            this.currentSortLiquidaciones = field;
+        },
+        // Sort method
+        sortBy(field) {
+            if (field === this.currentSort) {
+                this.currentSortDir = this.currentSortDir === 'asc' ? 'desc' : 'asc';
+            }
+            this.currentSort = field;
         },
     }
 })

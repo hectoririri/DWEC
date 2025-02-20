@@ -2,7 +2,7 @@
 -- Host:                         127.0.0.1
 -- Versión del servidor:         10.4.32-MariaDB - mariadb.org binary distribution
 -- SO del servidor:              Win64
--- HeidiSQL Versión:             12.10.0.7000
+-- HeidiSQL Versión:             12.9.0.6999
 -- --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -13,11 +13,6 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
-
-
--- Volcando estructura de base de datos para grua_municipal
-CREATE DATABASE IF NOT EXISTS `grua_municipal` /*!40100 DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci */;
-USE `grua_municipal`;
 
 -- Volcando estructura para tabla grua_municipal.liquidacion
 CREATE TABLE IF NOT EXISTS `liquidacion` (
@@ -40,7 +35,7 @@ CREATE TABLE IF NOT EXISTS `liquidacion` (
   CONSTRAINT `FK_liquidacion_retiradas` FOREIGN KEY (`id_retirada`) REFERENCES `retiradas` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
--- Volcando datos para la tabla grua_municipal.liquidacion: ~4 rows (aproximadamente)
+-- Volcando datos para la tabla grua_municipal.liquidacion: ~6 rows (aproximadamente)
 DELETE FROM `liquidacion`;
 INSERT INTO `liquidacion` (`id`, `id_retirada`, `nombre`, `nif`, `domicilio`, `poblacion`, `provincia`, `permiso`, `fecha`, `agente`, `importe_retirada`, `importe_deposito`, `total`, `opciones_pago`) VALUES
 	(1, 'VHCL0001', 'Juan Pérez', '12345678A', 'Calle Real 123', 'Madrid', 'Madrid', 'B-12345', '2023-10-03 14:30:00', 'Agente01', NULL, NULL, NULL, NULL),
@@ -62,9 +57,9 @@ CREATE TABLE IF NOT EXISTS `logs` (
   PRIMARY KEY (`id`),
   KEY `log_usuario_id_fk` (`usuario_id`),
   CONSTRAINT `log_usuario_id_fk` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=264 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=280 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
--- Volcando datos para la tabla grua_municipal.logs: ~241 rows (aproximadamente)
+-- Volcando datos para la tabla grua_municipal.logs: ~279 rows (aproximadamente)
 DELETE FROM `logs`;
 INSERT INTO `logs` (`id`, `usuario_id`, `accion`, `descripcion`, `fecha`, `created_at`, `updated_at`) VALUES
 	(1, 1, 'Loggin', 'El usuario ha iniciado sesión', '2025-02-17 02:31:46', '2025-02-17 02:31:46', '2025-02-17 02:31:46'),
@@ -329,7 +324,23 @@ INSERT INTO `logs` (`id`, `usuario_id`, `accion`, `descripcion`, `fecha`, `creat
 	(260, 1, 'Creación liquidacion', 'Se ha creado la liquidacionundefined', '2025-02-20 05:18:57', '2025-02-20 04:18:57', '2025-02-20 04:18:57'),
 	(261, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 05:32:34', '2025-02-20 04:32:34', '2025-02-20 04:32:34'),
 	(262, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 05:32:42', '2025-02-20 04:32:43', '2025-02-20 04:32:43'),
-	(263, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 05:33:37', '2025-02-20 04:33:37', '2025-02-20 04:33:37');
+	(263, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 05:33:37', '2025-02-20 04:33:37', '2025-02-20 04:33:37'),
+	(264, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 12:09:32', '2025-02-20 10:09:32', '2025-02-20 10:09:32'),
+	(265, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 12:13:16', '2025-02-20 10:13:16', '2025-02-20 10:13:16'),
+	(266, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 12:17:18', '2025-02-20 10:17:19', '2025-02-20 10:17:19'),
+	(267, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 12:28:27', '2025-02-20 10:28:28', '2025-02-20 10:28:28'),
+	(268, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 12:28:53', '2025-02-20 10:28:53', '2025-02-20 10:28:53'),
+	(269, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 12:29:00', '2025-02-20 10:29:00', '2025-02-20 10:29:00'),
+	(270, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 12:29:14', '2025-02-20 10:29:14', '2025-02-20 10:29:14'),
+	(271, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 12:29:24', '2025-02-20 10:29:24', '2025-02-20 10:29:24'),
+	(272, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 12:29:41', '2025-02-20 10:29:42', '2025-02-20 10:29:42'),
+	(273, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 12:39:52', '2025-02-20 10:39:53', '2025-02-20 10:39:53'),
+	(274, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 12:40:09', '2025-02-20 10:40:09', '2025-02-20 10:40:09'),
+	(275, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 12:40:22', '2025-02-20 10:40:22', '2025-02-20 10:40:22'),
+	(276, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 12:41:37', '2025-02-20 10:41:37', '2025-02-20 10:41:37'),
+	(277, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 12:42:37', '2025-02-20 10:42:38', '2025-02-20 10:42:38'),
+	(278, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 12:48:49', '2025-02-20 10:48:49', '2025-02-20 10:48:49'),
+	(279, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-20 12:50:00', '2025-02-20 10:50:00', '2025-02-20 10:50:00');
 
 -- Volcando estructura para tabla grua_municipal.retiradas
 CREATE TABLE IF NOT EXISTS `retiradas` (
