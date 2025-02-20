@@ -53,8 +53,219 @@ let app = new Vue({
         logeado: false, // Booleano que indica si se ha logeado o no
         pantalla: "", //Pantalla actual
 
+        // Pagination and sorting
+        pageSize: 10,
+        currentPage: 1,
+        searchQuery: '',
+        currentSort: 'id',
+        currentSortDir: 'asc',
+        columns: [
+            { label: 'ID', field: 'id' },
+            { label: 'Email', field: 'email' },
+            { label: 'Contraseña', field: 'password' },
+            { label: 'Rol', field: 'rol' }
+        ],
+        // Pagination and sorting for liquidaciones
+        pageSizeLiquidaciones: 10,
+        currentPageLiquidaciones: 1,
+        searchQueryLiquidaciones: '',
+        currentSortLiquidaciones: 'id',
+        currentSortDirLiquidaciones: 'asc',
+        columnsLiquidaciones: [
+            { label: 'ID', field: 'id' },
+            { label: 'Retirada', field: 'id_retirada' },
+            { label: 'Nombre', field: 'nombre' },
+            { label: 'NIF', field: 'nif' },
+            { label: 'Domicilio', field: 'domicilio' },
+            { label: 'Población', field: 'poblacion' },
+            { label: 'Provincia', field: 'provincia' },
+            { label: 'Permiso', field: 'permiso' },
+            { label: 'Fecha', field: 'fecha' },
+            { label: 'Agente', field: 'agente' },
+            { label: 'Importe retirada', field: 'importe_retirada' },
+            { label: 'Importe deposito', field: 'importe_deposito' },
+            { label: 'Total', field: 'total' },
+            { label: 'Opciones de pago', field: 'opciones_pago' },
+        ],
+        // Pagination and sorting for retiradas
+        pageSizeRetiradas: 10,
+        currentPageRetiradas: 1,
+        searchQueryRetiradas: '',
+        currentSortRetiradas: 'id',
+        currentSortDirRetiradas: 'asc',
+        columnsRetiradas: [
+            { label: 'ID', field: 'id' },
+            { label: 'Fecha entrada', field: 'fecha_entrada' },
+            { label: 'Fecha salida', field: 'fecha_salida' },
+            { label: 'Lugar', field: 'lugar' },
+            { label: 'Dirección', field: 'direccion' },
+            { label: 'Agente', field: 'agente' },
+            { label: 'Estado', field: 'estado' },
+        ],
+    },
+    computed: {
+        // Filter retiradas based on search query
+        filteredRetiradas() {
+            return this.retiradas.filter(retirada => {
+                return Object.values(retirada).some(value => 
+                    String(value).toLowerCase().includes(this.searchQueryRetiradas.toLowerCase())
+                );
+            });
+        },
+        // Sort filtered retiradas
+        sortedRetiradas() {
+            return [...this.filteredRetiradas].sort((a, b) => {
+                let modifier = this.currentSortDirRetiradas === 'asc' ? 1 : -1;
+                if (a[this.currentSortRetiradas] < b[this.currentSortRetiradas]) return -1 * modifier;
+                if (a[this.currentSortRetiradas] > b[this.currentSortRetiradas]) return 1 * modifier;
+                return 0;
+            });
+        },
+        // Paginate sorted retiradas
+        paginatedAndFilteredRetiradas() {
+            const start = (this.currentPageRetiradas - 1) * this.pageSizeRetiradas;
+            const end = start + this.pageSizeRetiradas;
+            return this.sortedRetiradas.slice(start, end);
+        },
+        // Calculate total pages for retiradas
+        totalPagesRetiradas() {
+            return Math.ceil(this.filteredRetiradas.length / this.pageSizeRetiradas);
+        },
+        // Calculate start index for retiradas
+        startIndexRetiradas() {
+            return (this.currentPageRetiradas - 1) * this.pageSizeRetiradas;
+        },
+        // Calculate end index for retiradas
+        endIndexRetiradas() {
+            const end = this.startIndexRetiradas + this.pageSizeRetiradas;
+            return Math.min(end, this.filteredRetiradas.length);
+        },
+        // Filter users based on search query
+        filteredUsers() {
+            return this.usuarios.filter(user => {
+                return Object.values(user).some(value => 
+                    String(value).toLowerCase().includes(this.searchQuery.toLowerCase())
+                );
+            });
+        },
+        // Sort filtered users
+        sortedUsers() {
+            return [...this.filteredUsers].sort((a, b) => {
+                let modifier = this.currentSortDir === 'asc' ? 1 : -1;
+                if (a[this.currentSort] < b[this.currentSort]) return -1 * modifier;
+                if (a[this.currentSort] > b[this.currentSort]) return 1 * modifier;
+                return 0;
+            });
+        },
+        // Paginate sorted users
+        paginatedAndFilteredUsers() {
+            const start = (this.currentPage - 1) * this.pageSize;
+            const end = start + this.pageSize;
+            return this.sortedUsers.slice(start, end);
+        },
+        // Calculate total pages
+        totalPages() {
+            return Math.ceil(this.filteredUsers.length / this.pageSize);
+        },
+        // Calculate start index
+        startIndex() {
+            return (this.currentPage - 1) * this.pageSize;
+        },
+        // Calculate end index
+        endIndex() {
+            const end = this.startIndex + this.pageSize;
+            return Math.min(end, this.filteredUsers.length);
+        },
+        // Filter liquidaciones based on search query
+        filteredLiquidaciones() {
+            // Check if liquidaciones is an array before filtering
+            if (!Array.isArray(this.liquidaciones)) {
+                return [];
+            }
+            return this.liquidaciones.filter(liquidacion => {
+                return Object.values(liquidacion).some(value => 
+                    String(value).toLowerCase().includes(this.searchQueryLiquidaciones.toLowerCase())
+                );
+            });
+        },
+        // Sort filtered liquidaciones
+        sortedLiquidaciones() {
+            return [...this.filteredLiquidaciones].sort((a, b) => {
+                let modifier = this.currentSortDirLiquidaciones === 'asc' ? 1 : -1;
+                if (a[this.currentSortLiquidaciones] < b[this.currentSortLiquidaciones]) return -1 * modifier;
+                if (a[this.currentSortLiquidaciones] > b[this.currentSortLiquidaciones]) return 1 * modifier;
+                return 0;
+            });
+        },
+        // Paginate sorted liquidaciones
+        paginatedAndFilteredLiquidaciones() {
+            const start = (this.currentPageLiquidaciones - 1) * this.pageSizeLiquidaciones;
+            const end = start + this.pageSizeLiquidaciones;
+            return this.sortedLiquidaciones.slice(start, end);
+        },
+        // Calculate total pages for liquidaciones
+        totalPagesLiquidaciones() {
+            return Math.ceil(this.filteredLiquidaciones.length / this.pageSizeLiquidaciones);
+        },
+        // Calculate start index for liquidaciones
+        startIndexLiquidaciones() {
+            return (this.currentPageLiquidaciones - 1) * this.pageSizeLiquidaciones;
+        },
+        // Calculate end index for liquidaciones
+        endIndexLiquidaciones() {
+            const end = this.startIndexLiquidaciones + this.pageSizeLiquidaciones;
+            return Math.min(end, this.filteredLiquidaciones.length);
+        },
+    },
+    watch: {
+        // Reset to first page when search query changes for retiradas
+        searchQueryRetiradas() {
+            this.currentPageRetiradas = 1;
+        },
+        // Reset to first page when page size changes for retiradas
+        pageSizeRetiradas() {
+            this.currentPageRetiradas = 1;
+        },
+        // Reset to first page when search query changes
+        searchQuery() {
+            this.currentPage = 1;
+        },
+        // Reset to first page when page size changes
+        pageSize() {
+            this.currentPage = 1;
+        },
+        // Reset to first page when search query changes for liquidaciones
+        searchQueryLiquidaciones() {
+            this.currentPageLiquidaciones = 1;
+        },
+        // Reset to first page when page size changes for liquidaciones
+        pageSizeLiquidaciones() {
+            this.currentPageLiquidaciones = 1;
+        }
     },
     methods: {
+        // Sort method for retiradas
+        sortByRetiradas(field) {
+            if (field === this.currentSortRetiradas) {
+                this.currentSortDirRetiradas = this.currentSortDirRetiradas === 'asc' ? 'desc' : 'asc';
+            }
+            this.currentSortRetiradas = field;
+        },
+        // Sort method for liquidaciones
+        sortByLiquidaciones(field) {
+            if (field === this.currentSortLiquidaciones) {
+                this.currentSortDirLiquidaciones = this.currentSortDirLiquidaciones === 'asc' ? 'desc' : 'asc';
+            }
+            this.currentSortLiquidaciones = field;
+        },
+        // Sort method
+        sortBy(field) {
+            if (field === this.currentSort) {
+                this.currentSortDir = this.currentSortDir === 'asc' ? 'desc' : 'asc';
+            }
+            this.currentSort = field;
+        },
+
         mostrarLiquidacion(){
             // Cambiamos pantalla a liquidación y cargamos la tabla
             this.pantalla = "liquidacion";
@@ -589,7 +800,8 @@ let app = new Vue({
             })
             .catch(error => {
                 console.error("Ocurrió un error:", error);
-            });
+            })
         },
     }
-});
+})
+
