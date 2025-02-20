@@ -26,7 +26,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Liquidacion extends Model
 {
-    
+    protected $table = 'liquidacion';
     protected $perPage = 20;
     public $timestamps = false;
 
@@ -43,15 +43,7 @@ class Liquidacion extends Model
      */
     public function retirada()
     {
-        return $this->belongsTo(\App\Models\Retirada::class, 'id_vehiculos', 'id');
-    }
-    
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function tarifa()
-    {
-        return $this->belongsTo(\App\Models\Tarifa::class, 'id_tarifa', 'id');
+        return $this->belongsTo(\App\Models\Retirada::class, 'id_retirada', 'id');
     }
     
 }

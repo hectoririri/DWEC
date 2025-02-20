@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Liquidacion;
 use Illuminate\Http\Request;
 
 class LiquidacionCtrl extends Controller
@@ -11,7 +12,7 @@ class LiquidacionCtrl extends Controller
      */
     public function index()
     {
-        //
+        return Liquidacion::all();
     }
 
     /**
@@ -27,7 +28,10 @@ class LiquidacionCtrl extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $liquidacion = Liquidacion::create($request->all());
+        $liquidacion->retirada->estado = 'Retirado';
+        $liquidacion->retirada->save();
+        return response()->json(['message' => 'Liquidacion creada correctamente'], 201);
     }
 
     /**
@@ -35,7 +39,7 @@ class LiquidacionCtrl extends Controller
      */
     public function show(string $id)
     {
-        //
+        return Liquidacion::find($id);
     }
 
     /**
@@ -51,7 +55,9 @@ class LiquidacionCtrl extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $liquidacion = Liquidacion::find($id);
+        $liquidacion->update($request->all());
+        return response()->json($liquidacion, 200);
     }
 
     /**
@@ -59,6 +65,7 @@ class LiquidacionCtrl extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $liquidacion = Liquidacion::find($id);
+        $liquidacion->delete();
     }
 }

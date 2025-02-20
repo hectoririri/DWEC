@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Retirada;
-use App\Models\Vehiculo;
 use Illuminate\Http\Request;
 
 class RetiradaCtrl extends Controller
@@ -76,5 +75,17 @@ class RetiradaCtrl extends Controller
         }
         $retirada->delete();
         return response()->json(['message' => 'Retirada eliminada correctamente'], 200);
+    }
+
+    /**
+     * Get vehicles currently in deposit
+     * 
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function getDisponibles()
+    {
+        $retiradas = Retirada::where('estado', 'En depósito')->get();
+        
+        return response()->json($retiradas, 200);
     }
 }

@@ -26,8 +26,29 @@ let app = new Vue({
             tipo_vehiculo: '',
             grua: '',
             estado: 'En deposito',
-            fecha: ''
         },
+
+        // Liquidaciones
+        liquidaciones: {},
+        liquidacion: {},
+        liquidacion_seleccionada: {},
+        formLiquidacion: { // Json de campos formulario creación liquidacion
+            id_retirada: '',
+            nombre: '',
+            nif: '',
+            domicilio: '',
+            poblacion: '',
+            provincia: '',
+            permiso: '',
+            fecha: '',
+            agente: '',
+            importe_retirada: '',
+            importe_deposito: '',
+            total: '',
+            opciones_pago: '',
+        },
+        retiradas_disponibles: {}, // Lista de retiradas que se pueden gestionar
+
 
         logeado: false, // Booleano que indica si se ha logeado o no
         pantalla: "", //Pantalla actual
@@ -35,19 +56,173 @@ let app = new Vue({
     },
     methods: {
         mostrarLiquidacion(){
+            // Cambiamos pantalla a liquidación y cargamos la tabla
             this.pantalla = "liquidacion";
-            console.log(this.pantalla);
+            this.obtenerLiquidaciones();
         },
         mostrarRetirada(){
+            // Cambiamos pantalla a retiradas y cargamos la tabla
             this.pantalla = "retiradas";
             this.obtenerRetiradas();
-            console.log(this.pantalla);
         },
         mostrarUsuarios(){
+            // Cambiamos pantalla a usuarios y cargamos la tabla
             this.pantalla = "usuarios";
             this.obtenerUsuarios();
-            console.log(this.pantalla);
             
+        },
+
+        // LIQUIDACIONES
+        obtenerLiquidaciones(){
+            fetch(this.url+'liquidaciones', {
+                method: 'GET',
+            })
+               .then(response => response.json())
+               .then(data => {
+                    this.liquidaciones = data;
+                })
+               .catch(error => {
+                    console.error("Error al obtener las liquidaciones:", error);
+                });
+        },
+        obtenerLiquidacion(id){
+            return fetch(this.url+'liquidaciones/'+id, {
+                method: 'GET',
+            })
+               .then(response => response.json())
+               .then(data => {
+                    this.liquidacion_seleccionada = data;
+                })
+               .catch(error => {
+                    console.error("Error al obtener la liquidacion:", error);
+                });
+        },
+
+        // FORMULARIOS LIQUIDACIONES
+
+        // Mostrar el modal de eliminar una liquidación una vez cargado los datos de esta
+        formularioEliminarLiquidacion(id){
+            // Cerrar cualquier modal abierto antes de abrir uno nuevo
+            $('#liquidacionEliminarModal').modal('hide');
+
+            this.liquidacion_seleccionada = {};
+
+            this.obtenerLiquidacion(id).then(() => {
+                // Mostrar el modal solo después de que los datos se hayan cargado
+                Vue.nextTick(() => {
+                  $('#liquidacionEliminarModal').modal('show');
+                });
+              });
+        },
+        // Mostrar el modal de editar una liquidación una vez cargado los datos de esta
+        formularioEditarLiquidacion(id){
+            $('#liquidacionEditarModal').modal('hide');
+            this.liquidacion_seleccionada = {};
+            
+            this.obtenerLiquidacion(id).then(() => {  // Fixed method name
+                Vue.nextTick(() => {
+                  $('#liquidacionEditarModal').modal('show');
+                });
+            });
+        },
+        //Mostrar el modal de crear una liquidación
+        abrirModalLiquidacion() {
+            $('#liquidacionCrearModal').modal('hide');  // Show the modal
+            this.obtenerRetiradasDisponibles();
+            $('#liquidacionCrearModal').modal('show');  // Show the modal
+        },
+
+        // CRUD LIQUIDACIONES
+        eliminarLiquidacion(){
+            fetch(this.url + 'liquidaciones/' + this.liquidacion_seleccionada.id, {
+                method: 'DELETE'
+            })
+            .then(response => {
+                if (response.ok) {
+                    this.obtenerLiquidaciones();
+                    this.nuevoLog('Eliminación liquidación', 'El administrador ha eliminado la liquidación '+this.liquidacion_seleccionada.id)
+                    this.liquidacion_seleccionada = {};
+                    $('#liquidacionEliminarModal').modal('hide');
+                }
+            })
+            .catch(error => {
+                console.error("Error al eliminar la liquidacion:", error);
+            });
+        },
+        crearLiquidacion() {
+            fetch(this.url + 'liquidaciones', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(this.formLiquidacion)
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    return response.json().then(data => {
+                        throw new Error(data.message || 'Error al crear la liquidación');
+                    });
+                }
+            })
+            .then(data => {
+                this.obtenerLiquidaciones();
+                $('#liquidacionCrearModal').modal('hide');
+                this.nuevoLog('Creación liquidacion', 'Se ha creado la liquidacion'+this.formLiquidacion.id);
+                this.formLiquidacion = {
+                    id_retirada: '',
+                    nombre: '',
+                    nif: '',
+                    domicilio: '',
+                    poblacion: '',
+                    provincia: '',
+                    permiso: '',
+                    fecha: '',
+                    agente: '',
+                    importe_retirada: '',
+                    importe_deposito: '',
+                    total: '',
+                    opciones_pago: '',
+                };
+                console.log('Retirada creada correctamente', data);
+            })
+            .catch(error => {
+                console.error("Error al crear la retirada:", error);
+            });
+        },
+        editarLiquidacion() {
+            return fetch(this.url + 'liquidaciones/' + this.liquidacion_seleccionada.id, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(this.liquidacion_seleccionada)
+
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    return response.json().then(data => {
+                        throw new Error(data.message || 'Error al editar la liquidacion');
+                    });
+                }
+            })
+            .then(data => {
+                this.obtenerLiquidaciones();
+                $('#liquidacionEditarModal').modal('hide');
+                this.nuevoLog('Modificación liquidacion', 'El administrador ha modificado la liquidacion '+this.liquidacion_seleccionada.id)
+                this.liquidacion_seleccionada = {};
+                console.log('liquidacion actualizado correctamente');
+            })
+            .catch(error => {
+                console.error("Error al editar la liquidacion:", error);
+                console.log(this.liquidacion_seleccionada);
+                
+            });
         },
 
         // RETIRADAS
@@ -77,6 +252,18 @@ let app = new Vue({
                     console.error("Error al obtener la retirada:", error);
                 });
         },
+        obtenerRetiradasDisponibles(){
+            fetch(this.url+'retiradas/disponibles', {
+                method: 'GET',
+            })
+                .then(response => response.json())
+                .then(data => {
+                    this.retiradas_disponibles = data;
+                })
+                .catch(error => {
+                    console.error("Error al obtener las retiradas disponibles:", error);
+                });
+        },
 
         // CRUD RETIRADAS
         crearRetirada() {
@@ -100,6 +287,7 @@ let app = new Vue({
             .then(data => {
                 this.obtenerRetiradas();
                 $('#retiradaCrearModal').modal('hide');
+                this.nuevoLog('Creación retirada', 'Se ha creado la retirada'+this.formRetirada.id);
                 this.formRetirada = {
                     id: '',
                     fecha_entrada: '',
@@ -115,9 +303,7 @@ let app = new Vue({
                     tipo_vehiculo: '',
                     grua: '',
                     estado: '',
-                    fecha: ''
                 };
-                this.nuevoLog('Creación retirada', 'Se ha creado una nueva retirada');
                 console.log('Retirada creada correctamente', data);
             })
             .catch(error => {
@@ -131,7 +317,7 @@ let app = new Vue({
             .then(response => {
                 if (response.ok) {
                     this.obtenerRetiradas();
-                    this.nuevoLog('Eliminación retirada', 'El administrador ha eliminado la retirada '+this.usuario_seleccionado.id)
+                    this.nuevoLog('Eliminación retirada', 'El administrador ha eliminado la retirada '+this.retirada_seleccionada.id)
                     this.retirada_seleccionada = {};
                     $('#retiradaEliminarModal').modal('hide');
                 }
