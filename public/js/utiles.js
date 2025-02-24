@@ -50,6 +50,14 @@ let app = new Vue({
         },
         retiradas_disponibles: {}, // Lista de retiradas que se pueden gestionar
 
+        precios: [{
+            "Motocicleta, aperos, motocarros y similares": 25,
+            "Turismo hasta 12 cv o Remolques hasta 750 kg": 100,
+            "Turismos más de 12 cv o Remolques más de 750 kg": 130,
+            "Vehículos especiales": 150,
+            "Vehículos de cortesía": 0,
+            "Chatarra": 0
+        }],
 
         logeado: false, // Booleano que indica si se ha logeado o no
         pantalla: "", //Pantalla actual
@@ -105,20 +113,6 @@ let app = new Vue({
         ],
     },
     computed: {
-        rellenarVehiculoCreacionLiquidacion() {
-            // Obtener los datos del vehiculo seleccionado
-            fetch(this.url+'retiradas/'+formLiquidacion.id_retirada, {
-                method: 'GET',
-            })
-            .then(response => response.json())
-            .then(data => {
-                // Rellenar los campos del formulario con los datos del vehiculo
-                this.formLiquidacion.agente = data.agente;
-            })
-            .catch(error => {
-                console.error("Error al obtener los datos del vehiculo:", error);
-            });
-        },
         // Filter retiradas based on search query
         filteredRetiradas() {
             return this.retiradas.filter(retirada => {
@@ -259,6 +253,27 @@ let app = new Vue({
         }
     },
     methods: {
+        rellenarVehiculoCreacionLiquidacion() {
+            if (!this.formLiquidacion.id_retirada) return; // Add validation
+            
+            fetch(this.url + 'retiradas/' + this.formLiquidacion.id_retirada, {
+                method: 'GET',
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("ID seleccionado:", this.formLiquidacion.id_retirada);
+                console.log("Vehiculo seleccionado:", data.tipo_vehiculo);
+                // ARREGLAR
+                console.log(this.precios[data.tipo_vehiculo]);
+                this.formLiquidacion.agente = data.agente;
+
+            })
+            .catch(error => {
+                console.error("Error al obtener los datos del vehiculo:", error);
+            });
+        },
+
+
         mostrarLiquidacion(){
             // Cambiamos pantalla a liquidación y cargamos la tabla
             this.pantalla = "liquidacion";

@@ -116,7 +116,7 @@
           <main class="flex-grow-1 bg-light py-4">
             <div class="container-fluid">
               <section>
-                <!-- Registrar la entrega de un vehiculo (admin) -->
+                <!-- Retiradas (admin) -->
                 <div v-if="pantalla === 'liquidacion'">
                   <h1 class="text-center">Gestión de Retiradas de Vehículos</h1>
                   <!-- Botón para abrir el modal -->
@@ -253,11 +253,11 @@
                               <div class="row">
                                 <div class="col-md-12 mb-6">
                                   <label for="id" class="form-label">ID Vehiculo:</label>
-                                  <select v-model="liquidacion.id_retirada" class="form-control" id="id_retirada">
-                                    <option v-for="retirada in retiradas_disponibles" v-bind:value="retirada.id">
-                                      {{ retirada.id }} - {{ retirada.matricula }}
+                                  <select v-model="formLiquidacion.id_retirada" class="form-control" id="id_retirada" @change="rellenarVehiculoCreacionLiquidacion">
+                                    <option v-for="retirada in retiradas_disponibles" :value="retirada.id">
+                                        {{ retirada.id }} - {{ retirada.matricula }}
                                     </option>
-                                  </select>
+                                </select>
                                 </div>
                                 <div class="col-md-12 mb-6">
                                   <label for="nombre" class="form-label">Nombre:</label>
@@ -469,7 +469,7 @@
                   </div>
                 </div>
 
-                <!-- Retirada de vehiculo por grua (admin y operario) -->
+                <!-- Vehiculos -->
                 <div v-if="pantalla === 'retiradas'">
                     <h1 class="text-center">Gestión de Vehículos</h1>
                     <!-- Botón para abrir el modal -->
@@ -1050,4 +1050,3 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   </body>
 </html>
-
