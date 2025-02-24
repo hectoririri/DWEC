@@ -88,4 +88,21 @@ class RetiradaCtrl extends Controller
         
         return response()->json($retiradas, 200);
     }
+
+    /**
+     * Get vehicles currently in deposit
+     * 
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function getUltima()
+    {
+        $ultimaRetirada = Retirada::latest('id')->first();
+        
+        if ($ultimaRetirada) {
+            $siguienteId = $ultimaRetirada->id + 1;
+            return response()->json(['ultima_retirada' => $ultimaRetirada, 'siguiente_id' => $siguienteId], 200);
+        }
+        
+        return response()->json(['ultima_retirada' => null, 'siguiente_id' => 1], 200);
+    }
 }

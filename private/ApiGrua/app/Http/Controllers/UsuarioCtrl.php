@@ -31,24 +31,11 @@ class UsuarioCtrl extends Controller
      */
     public function store(Request $request)
     {
-        // Log the incoming request data
-        // Log::info('Datos recibidos en store:', $request->all());
-
-        // Validar los datos recibidos
-        $validatedData = $request->validate([
-            'email' => 'required|email|unique:usuarios,email',
-            'rol' => 'required|string',
-            'password' => 'required|string|min:6',
-        ]);
-
-        // Log the validated data
-        // Log::info('Datos validados:', $validatedData);
-
         // Crear un nuevo usuario
         $usuario = new Usuario();
-        $usuario->email = $validatedData['email'];
-        $usuario->rol = $validatedData['rol'];
-        $usuario->password = $validatedData['password'];
+        $usuario->email = $request['email'];
+        $usuario->rol = $request['rol'];
+        $usuario->password = $request['password'];
         // $usuario->password = bcrypt($validatedData['password']); // Encriptar la contraseña
         $usuario->save();
 
@@ -84,19 +71,7 @@ class UsuarioCtrl extends Controller
         if (!$usuario) {
             return response()->json(['message' => 'Usuario no encontrado'], 404);
         }
-
-        // Validar los datos recibidos
-        // $validator = Validator::make($request->all(), [
-        //     'email' => 'required|email|unique:usuarios,email,' . $id,
-        //     'rol' => 'required|in:administrador,usuario',
-        //     'password' => 'nullable|min:6', // Opcional, solo si se desea cambiar la contraseña
-        // ]);
-
-        // if ($validator->fails()) {
-        //     return response()->json(['errors' => $validator->errors()], 422);
-        // }
-
-        // Actualizar el usuario
+        // Actualizar
         $usuario->email = $request->input('email');
         $usuario->rol = $request->input('rol');
         $usuario->password = $request->input('password');

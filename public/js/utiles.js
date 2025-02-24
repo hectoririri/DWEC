@@ -9,6 +9,7 @@ let app = new Vue({
         usuario_seleccionado: "", //Json del usuario seleccionado al editar, eliminar...
         usuarios: [], // Lista usuarios
 
+        // Retirada = Vehiculos
         retiradas: [], // Lista de retiradas
         retirada_seleccionada: {}, // Json de la retirada seleccionada
         formRetirada: { // Json de campos formulario creación retirada
@@ -25,10 +26,10 @@ let app = new Vue({
             motivo: '',
             tipo_vehiculo: '',
             grua: '',
-            estado: 'En deposito',
+            estado: 'En depósito',
         },
 
-        // Liquidaciones
+        // Liquidaciones = Retiradas 
         liquidaciones: {},
         liquidacion: {},
         liquidacion_seleccionada: {},
@@ -104,6 +105,20 @@ let app = new Vue({
         ],
     },
     computed: {
+        rellenarVehiculoCreacionLiquidacion() {
+            // Obtener los datos del vehiculo seleccionado
+            fetch(this.url+'retiradas/'+formLiquidacion.id_retirada, {
+                method: 'GET',
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Rellenar los campos del formulario con los datos del vehiculo
+                this.formLiquidacion.agente = data.agente;
+            })
+            .catch(error => {
+                console.error("Error al obtener los datos del vehiculo:", error);
+            });
+        },
         // Filter retiradas based on search query
         filteredRetiradas() {
             return this.retiradas.filter(retirada => {
@@ -451,6 +466,32 @@ let app = new Vue({
                 })
                 .catch(error => {
                     console.error("Error al obtener las retiradas disponibles:", error);
+                });
+        },
+
+        abrirModalRetirada() {
+            $('#retiradaCrearModal').modal('hide');
+            this.getUltimoId();
+            $('#retiradaCrearModal').modal('show');
+        },
+
+        getUltimoId(){
+            fetch(this.url + 'retiradas/ultima')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.siguiente_id === 1) {
+                        // If no records exist, start with 20250001
+                        this.formRetirada.id = '20250001';
+                    } else {
+                        // Get the next ID
+                        const currentId = parseInt(data.ultima_retirada.id);
+                        this.formRetirada.id = (currentId + 1).toString();
+                    }
+                })
+                .catch(error => {
+                    console.error("Error al obtener el último ID:", error);
+                    // Set default ID if there's an error
+                    this.formRetirada.id = '20250001';
                 });
         },
 
