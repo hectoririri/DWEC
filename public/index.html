@@ -158,7 +158,7 @@
                         <thead class="table-dark">
                           <tr>
                             <th scope="col" class="align-middle text-center" @click="sortByLiquidaciones('id')">ID</th>
-                            <th scope="col" class="align-middle text-center" @click="sortByLiquidaciones('id_retirada')">ID Retirada</th>
+                            <th scope="col" class="align-middle text-center" @click="sortByLiquidaciones('id_retirada')">ID Vehículo</th>
                             <th scope="col" class="align-middle text-center" @click="sortByLiquidaciones('nombre')">Nombre</th>
                             <th scope="col" class="align-middle text-center" @click="sortByLiquidaciones('nif')">NIF</th>
                             <th scope="col" class="align-middle text-center" @click="sortByLiquidaciones('domicilio')">Domicilio</th>
@@ -249,88 +249,92 @@
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
+                            <form @submit.prevent="crearLiquidacion">
                             <div class="modal-body">
-                              <div class="row">
-                                <div class="col-md-12 mb-6">
-                                  <label for="id" class="form-label">ID Vehiculo:</label>
-                                  <select v-model="formLiquidacion.id_retirada" class="form-control" id="id_retirada" @change="rellenarVehiculoCreacionLiquidacion">
-                                    <option v-for="retirada in retiradas_disponibles" :value="retirada.id">
-                                        {{ retirada.id }} - {{ retirada.matricula }}
-                                    </option>
-                                </select>
-                                </div>
-                                <div class="col-md-12 mb-6">
-                                  <label for="nombre" class="form-label">Nombre:</label>
-                                  <input type="text" v-model="formLiquidacion.nombre" class="form-control" id="nombre">
-                                </div>
-                              </div>
-                              <div class="row">
-                                <div class="col-md-12 mb-6">
-                                  <label for="nif" class="form-label">NIF:</label>
-                                  <input type="text" v-model="formLiquidacion.nif" class="form-control" id="nif">
-                                </div>
-                                <div class="col-md-12 mb-6">
-                                  <label for="domicilio" class="form-label">Domicilio:</label>
-                                  <input type="text" v-model="formLiquidacion.domicilio" class="form-control" id="domicilio">
-                                </div>
-                              </div>
-                              <div class="row">
-                                <div class="col-md-12 mb-6">
-                                  <label for="poblacion" class="form-label">Población:</label>
-                                  <input type="text" v-model="formLiquidacion.poblacion" class="form-control" id="poblacion">
-                                </div>
-                                <div class="col-md-12 mb-6">
-                                  <label for="provincia" class="form-label">Provincia:</label>
-                                  <input type="text" v-model="formLiquidacion.provincia" class="form-control" id="provincia">
-                                </div>
-                              </div>
-                              <div class="row">
-                                <div class="col-md-12 mb-6">
-                                  <label for="permiso" class="form-label">Permiso:</label>
-                                  <input type="text" v-model="formLiquidacion.permiso" class="form-control" id="permiso">
-                                </div>
-                                <div class="col-md-12 mb-6">
-                                  <label for="fecha" class="form-label">Fecha:</label>
-                                  <input type="datetime-local" v-model="formLiquidacion.fecha = new Date(Date.now() + 3600000).toISOString().slice(0,16)" class="form-control" id="fecha" required>
-                                </div>
-                              </div>
-                              <div class="row">
-                                <div class="col-md-12 mb-6">
-                                  <label for="agente" class="form-label">Agente:</label>
-                                  <input type="text" v-model="formLiquidacion.agente" class="form-control" id="agente">
-                                </div>
-                                <div class="col-md-12 mb-6">
-                                  <label for="importe_retirada" class="form-label">Importe Retirada:</label>
-                                  <input type="number" step="0.01" min="0" v-model="formLiquidacion.importe_retirada" class="form-control" id="importe_retirada">
-                                </div>
-                              </div>
-                              <div class="row">
-                                <div class="col-md-12 mb-6">
-                                  <label for="importe_deposito" class="form-label">Importe Deposito:</label>
-                                  <input type="number" step="0.01" min="0" v-model="formLiquidacion.importe_deposito" class="form-control" id="importe_deposito">
-                                </div>
-                              </div>
-                              <div class="row">
-                                <div class="col-md-12 mb-6">
-                                  <label for="total" class="form-label">Total:</label>
-                                  <input type="number" step="0.01" min="0" v-model="formLiquidacion.total" class="form-control" id="total" required>
-                                </div>
-                              </div>
-                              <div class="row">
-                                <div class="col-md-12 mb-6">
-                                  <label for="opciones_pago" class="form-label">Opciones Pago:</label>
-                                  <select v-model="formLiquidacion.opciones_pago" class="form-control"  id="grua" required>
-                                    <option value="Metálico">Metálico</option>
-                                    <option value="Tarjeta ">Tarjeta</option>
-                                    <option value="Bizum">Bizum</option>
+                                <div class="row">
+                                  <div class="col-md-12 mb-6">
+                                    <label for="id" class="form-label">ID Vehiculo:</label>
+                                    <select v-model="formLiquidacion.id_retirada" class="form-control" id="id_retirada" @change="rellenarFormCreacionVehiculo">
+                                      <option v-for="retirada in retiradas_disponibles" :value="retirada.id">
+                                          {{ retirada.id }} - {{ retirada.matricula }}
+                                      </option>
                                   </select>
+                                  </div>
+                                  <div class="col-md-12 mb-6">
+                                    <label for="nombre" class="form-label">Nombre:</label>
+                                    <input type="text" v-model="formLiquidacion.nombre" class="form-control" id="nombre">
+                                  </div>
+                                </div>
+                                <div class="row">
+                                  <div class="col-md-12 mb-6">
+                                    <label for="nif" class="form-label">NIF:</label>
+                                    <input type="text" v-model="formLiquidacion.nif" class="form-control" id="nif">
+                                  </div>
+                                  <div class="col-md-12 mb-6">
+                                    <label for="domicilio" class="form-label">Domicilio:</label>
+                                    <input type="text" v-model="formLiquidacion.domicilio" class="form-control" id="domicilio">
+                                  </div>
+                                </div>
+                                <div class="row">
+                                  <div class="col-md-12 mb-6">
+                                    <label for="poblacion" class="form-label">Población:</label>
+                                    <input type="text" v-model="formLiquidacion.poblacion" class="form-control" id="poblacion">
+                                  </div>
+                                  <div class="col-md-12 mb-6">
+                                    <label for="provincia" class="form-label">Provincia:</label>
+                                    <input type="text" v-model="formLiquidacion.provincia" class="form-control" id="provincia">
+                                  </div>
+                                </div>
+                                <div class="row">
+                                  <div class="col-md-12 mb-6">
+                                    <label for="permiso" class="form-label">Permiso:</label>
+                                    <input type="text" v-model="formLiquidacion.permiso" class="form-control" id="permiso">
+                                  </div>
+                                  <div class="col-md-12 mb-6">
+                                    <label for="fecha" class="form-label">Fecha:</label>
+                                    <input type="datetime-local" v-model="formLiquidacion.fecha" class="form-control" id="fecha" @change="calcularPrecioHoras" required>
+                                  </div>
+                                </div>
+                                <div class="row">
+                                  <div class="col-md-12 mb-6">
+                                    <label for="agente" class="form-label">Agente:</label>
+                                    <input type="text" v-model="formLiquidacion.agente" class="form-control" id="agente">
+                                  </div>
+                                  <div class="col-md-12 mb-6">
+                                    <label for="importe_retirada" class="form-label">Importe Retirada:</label>
+                                    <input type="number" disabled v-model="formLiquidacion.importe_retirada" class="form-control" id="importe_retirada">
+                                  </div>
+                                </div>
+                                <div class="row">
+                                  <div class="col-md-12 mb-6">
+                                    <label for="importe_deposito" class="form-label">Importe Deposito:</label>
+                                    <input type="number" disabled v-model="formLiquidacion.importe_deposito" class="form-control" id="importe_deposito">
+                                  </div>
+                                </div>
+                                <div class="row">
+                                  <div class="col-md-12 mb-6">
+                                    <label for="total" class="form-label">Total:</label>
+                                    <input type="number" disabled v-model="formLiquidacion.total" class="form-control" id="total" required>
+                                  </div>
+                                </div>
+                                <div class="row">
+                                  <div class="col-md-12 mb-6">
+                                    <label for="opciones_pago" class="form-label">Opciones Pago:</label>
+                                    <select v-model="formLiquidacion.opciones_pago" class="form-control"  id="grua" required>
+                                      <option value="Metálico">Metálico</option>
+                                      <option value="Tarjeta ">Tarjeta</option>
+                                      <option value="Bizum">Bizum</option>
+                                    </select>
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                                <button type="button" class="btn btn-primary" @click="crearLiquidacion">Crear liquidación</button>
-                            </div>
+
+                              <div class="modal-footer">
+                                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                                  <!-- <button type="button" class="btn btn-primary" @click="crearLiquidacion">Crear liquidación</button> -->
+                                  <button type="submit" class="btn btn-primary">Crear liquidación</button>
+                              </div>
+                          </form>
                         </div>
                     </div>
                   </div>
@@ -347,19 +351,19 @@
                             <div class="modal-body">
                               <div class="row">
                                 <div class="col-md-12 mb-6">
-                                  <h5>¿Estás seguro de que quieres eliminar la liquidacion Nº{{liquidacion_seleccionada.id}}?</h5>
+                                  <h5>¿Estás seguro de que quieres eliminar la retirada Nº{{liquidacion_seleccionada.id}}?</h5>
                                   <ul class="list-group">
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
-                                      ID Retirada:
-                                      <span class="badge bg-primary rounded-pill p-2">{{liquidacion_seleccionada.id}}</span>
+                                      ID Vehículo:
+                                      <span class="text-end">{{liquidacion_seleccionada.id}}</span>
                                     </li>
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
                                       Nombre:
-                                      <span class="badge bg-secondary rounded-pill p-2">{{liquidacion_seleccionada.nombre}}</span>
+                                      <span class="text-end">{{liquidacion_seleccionada.nombre}}</span>
                                     </li>
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
                                       Fecha:
-                                      <span class="badge bg-info rounded-pill p-2">{{liquidacion_seleccionada.fecha}}</span>
+                                      <span class="text-end">{{liquidacion_seleccionada.fecha}}</span>
                                     </li>
                                   </ul>
                                 </div>
@@ -367,7 +371,7 @@
                           </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                                <button type="button" class="btn btn-danger" @click="eliminarLiquidacion">Eliminar liquidacion</button>
+                                <button type="button" class="btn btn-danger" @click="eliminarLiquidacion">Eliminar retirada</button>
                             </div>
                         </div>
                     </div>
@@ -384,14 +388,6 @@
                             </div>
                             <div class="modal-body">
                               <div class="row">
-                                <div class="col-md-12 mb-6">
-                                  <label for="id" class="form-label">ID Retirada:</label>
-                                  <select v-model="liquidacion_seleccionada.id_retirada" class="form-control" id="id_retirada">
-                                    <option v-for="retirada in retiradas_disponibles" v-bind:value="retirada.id" :selected="retiradas_disponibles.id === retirada.id">
-                                      {{ retirada.id }} - {{ retirada.matricula }}
-                                    </option>
-                                  </select>
-                                </div>
                                 <div class="col-md-12 mb-6">
                                   <label for="nombre" class="form-label">Nombre:</label>
                                   <input type="text" v-model="liquidacion_seleccionada.nombre" class="form-control" id="nombre">
@@ -424,7 +420,7 @@
                                 </div>
                                 <div class="col-md-12 mb-6">
                                   <label for="fecha" class="form-label">Fecha:</label>
-                                  <input type="datetime-local" v-model="liquidacion_seleccionada.fecha" class="form-control" id="fecha" required>
+                                  <input type="datetime-local" v-model="liquidacion_seleccionada.fecha" class="form-control" id="fecha" @change="calcularPrecioHoras" required>
                                 </div>
                               </div>
                               <div class="row">
@@ -590,7 +586,7 @@
                         </div>
                       </div>
                     
-                    <!-- Crear retirada -->
+                    <!-- Crear vehiculo -->
                     <div class="modal fade" id="retiradaCrearModal" tabindex="-1" role="dialog" aria-labelledby="retiradaCrearModalLabel" aria-hidden="true">
                       <div class="modal-dialog" role="document">
                           <div class="modal-content">
@@ -696,7 +692,7 @@
                       </div>
                     </div>
 
-                    <!-- Eliminar retirada -->
+                    <!-- Eliminar vehiculo -->
                     <div class="modal fade" id="retiradaEliminarModal" tabindex="-1" role="dialog" aria-labelledby="retiradaEliminarModalLabel" aria-hidden="true">
                       <div class="modal-dialog" role="document">
                           <div class="modal-content">
@@ -721,7 +717,7 @@
                       </div>
                     </div>
 
-                    <!-- Editar retirada -->
+                    <!-- Editar vehiculo -->
                     <div class="modal fade" id="retiradaEditarModal" tabindex="-1" role="dialog" aria-labelledby="retiradaEditarModalLabel" aria-hidden="true">
                       <div class="modal-dialog" role="document">
                           <div class="modal-content">

@@ -50,14 +50,20 @@ let app = new Vue({
         },
         retiradas_disponibles: {}, // Lista de retiradas que se pueden gestionar
 
-        precios: [{
-            "Motocicleta, aperos, motocarros y similares": 25,
-            "Turismo hasta 12 cv o Remolques hasta 750 kg": 100,
-            "Turismos más de 12 cv o Remolques más de 750 kg": 130,
-            "Vehículos especiales": 150,
-            "Vehículos de cortesía": 0,
-            "Chatarra": 0
-        }],
+        // Precios por tipo de vehículo
+        precios: [
+            { tipo: "Motocicleta, aperos, motocarros y similares", precio: 25 },
+            { tipo: "Turismo hasta 12 cv o Remolques hasta 750 kg", precio: 100 },
+            { tipo: "Turismos más de 12 cv o Remolques más de 750 kg", precio: 130 },
+            { tipo: "Vehiculos especiales", precio: 150 },
+            { tipo: "Vehiculos de cortesia", precio: 0 },
+            { tipo: "Chatarra", precio: 0 }
+        ],
+        precio_encontrado: 0,
+        fecha_entrada: 0,
+
+        // Tarifas
+        tarifa: {},
 
         logeado: false, // Booleano que indica si se ha logeado o no
         pantalla: "", //Pantalla actual
@@ -111,6 +117,9 @@ let app = new Vue({
             { label: 'Agente', field: 'agente' },
             { label: 'Estado', field: 'estado' },
         ],
+    },
+    mounted() {
+        this.cargarTarifa();
     },
     computed: {
         // Filter retiradas based on search query
@@ -253,7 +262,20 @@ let app = new Vue({
         }
     },
     methods: {
-        rellenarVehiculoCreacionLiquidacion() {
+        cargarTarifa(){
+            fetch(this.url+'tarifa/ultima', {
+                method: 'GET',
+            })
+            .then(response => response.json())
+            .then(data => {
+                this.tarifa = data;
+                console.log("Tarifa cargada: ", this.tarifa);
+            })
+            .catch(error => {
+                console.error("Error al cargar la tarifa:", error);
+            });
+        },
+        rellenarFormCreacionVehiculo() {
             if (!this.formLiquidacion.id_retirada) return; // Add validation
             
             fetch(this.url + 'retiradas/' + this.formLiquidacion.id_retirada, {
@@ -263,17 +285,84 @@ let app = new Vue({
             .then(data => {
                 console.log("ID seleccionado:", this.formLiquidacion.id_retirada);
                 console.log("Vehiculo seleccionado:", data.tipo_vehiculo);
-                // ARREGLAR
-                console.log(this.precios[data.tipo_vehiculo]);
-                this.formLiquidacion.agente = data.agente;
 
+                // Buscamos el precio correspondiente en la lista de precios
+                this.precio_encontrado = this.precios.find(precio => precio.tipo === data.tipo_vehiculo);
+                this.fecha_entrada = data.fecha_entrada;
+
+                // Calculamos el precio según
+                this.calcularPrecioHoras();
+
+                // Asignamos el agente al formulario de retirada
+                this.formLiquidacion.agente = data.agente;
             })
             .catch(error => {
                 console.error("Error al obtener los datos del vehiculo:", error);
             });
         },
+        calcularPrecioHoras(){
+            // Calculate hours between dates
+                // Parse dates ensuring proper format
+                const fechaEntrada = new Date(this.fecha_entrada.replace(' ', 'T'));
+                const fechaActual = new Date(this.formLiquidacion.fecha.replace(' ', 'T'));
+                if (fechaEntrada > fechaActual) {
+                    this.formLiquidacion.fecha = new Date(Date.now() + 3600000).toISOString().slice(0,16)
+                    console.error("La fecha de liquidación debe ser posterior a la fecha de entrada");
+                    return;
+                }
+                
+                // Calculate time difference in milliseconds
+                const diffTime = Math.abs(fechaActual.getTime() - fechaEntrada.getTime());
+                
+                // Convert to hours and round up
+                const diffHours = Math.ceil(diffTime / (1000 * 60 * 60));
+                console.log("Horas transcurridas: ", diffHours);
 
-
+                // Calculate deposit amount
+                if (diffHours <= this.tarifa.horas_gratis) {
+                    this.formLiquidacion.importe_deposito = 0;
+                } else {
+                    this.formLiquidacion.importe_deposito = diffHours * this.tarifa.costo_por_hora;
+                }
+                
+                if (this.precio_encontrado.precio) {
+                    this.formLiquidacion.importe_retirada = this.precio_encontrado.precio;
+                    console.log("Precio encontrado:", this.precio_encontrado.precio);
+                } else {
+                    console.log("Tipo de vehículo no encontrado en la lista de precios");
+                    this.formLiquidacion.importe_retirada = 0;
+                }
+                // Asignamos el total al formulariom de retirada
+                this.formLiquidacion.total = this.formLiquidacion.importe_retirada + this.formLiquidacion.importe_deposito;
+        },
+        // Nuevo método para calcular precios en edición
+        calcularPrecioHorasEdicion(){
+            const fechaEntrada = new Date(this.fecha_entrada.replace(' ', 'T'));
+            const fechaActual = new Date(this.liquidacion_seleccionada.fecha.replace(' ', 'T'));
+            
+            if (fechaActual > fechaEntrada) {
+                this.liquidacion_seleccionada.fecha = new Date(Date.now() + 3600000).toISOString().slice(0,16);
+                console.error("La fecha de liquidación debe ser posterior a la fecha de entrada");
+                return;
+            }
+            
+            const diffTime = Math.abs(fechaActual.getTime() - fechaEntrada.getTime());
+            const diffHours = Math.ceil(diffTime / (1000 * 60 * 60));
+            
+            if (diffHours <= this.tarifa.horas_gratis) {
+                this.liquidacion_seleccionada.importe_deposito = 0;
+            } else {
+                this.liquidacion_seleccionada.importe_deposito = diffHours * this.tarifa.costo_por_hora;
+            }
+            
+            if (this.precio_encontrado.precio) {
+                this.liquidacion_seleccionada.importe_retirada = this.precio_encontrado.precio;
+            } else {
+                this.liquidacion_seleccionada.importe_retirada = 0;
+            }
+            
+            this.liquidacion_seleccionada.total = this.liquidacion_seleccionada.importe_retirada + this.liquidacion_seleccionada.importe_deposito;
+        },
         mostrarLiquidacion(){
             // Cambiamos pantalla a liquidación y cargamos la tabla
             this.pantalla = "liquidacion";
@@ -338,9 +427,20 @@ let app = new Vue({
             $('#liquidacionEditarModal').modal('hide');
             this.liquidacion_seleccionada = {};
             
-            this.obtenerLiquidacion(id).then(() => {  // Fixed method name
+            this.obtenerLiquidacion(id).then(() => {
+                // Obtener la retirada asociada para calcular los precios
+                fetch(this.url + 'retiradas/' + this.liquidacion_seleccionada.id_retirada, {
+                    method: 'GET',
+                })
+                .then(response => response.json())
+                .then(data => {
+                    this.fecha_entrada = data.fecha_entrada;
+                    this.precio_encontrado = this.precios.find(precio => precio.tipo === data.tipo_vehiculo);
+                    this.calcularPrecioHorasEdicion();
+                });
+
                 Vue.nextTick(() => {
-                  $('#liquidacionEditarModal').modal('show');
+                    $('#liquidacionEditarModal').modal('show');
                 });
             });
         },
@@ -348,6 +448,23 @@ let app = new Vue({
         abrirModalLiquidacion() {
             $('#liquidacionCrearModal').modal('hide');  // Show the modal
             this.obtenerRetiradasDisponibles();
+            // Reset the form
+            this.formLiquidacion = {
+                id_retirada: '',
+                nombre: '',
+                nif: '',
+                domicilio: '',
+                poblacion: '',
+                provincia: '',
+                permiso: '',
+                fecha: new Date(Date.now() + 3600000).toISOString().slice(0,16),
+                agente: '',
+                importe_retirada: '',
+                importe_deposito: '',
+                total: '',
+                opciones_pago: '',
+            };
+            this.rellenarFormCreacionVehiculo();
             $('#liquidacionCrearModal').modal('show');  // Show the modal
         },
 

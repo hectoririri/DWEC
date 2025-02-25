@@ -63,4 +63,9 @@ class TarifaCtrl extends Controller
     {
         //
     }
+
+    public function getUltima(){
+        $tarifa = Tarifa::orderBy('id', 'desc')->first();
+        return $tarifa;
+    }
 }
