@@ -30,6 +30,7 @@ class LiquidacionCtrl extends Controller
     {
         $liquidacion = Liquidacion::create($request->all());
         $liquidacion->retirada->estado = 'Retirado';
+        $liquidacion->retirada->fecha_salida = $request->fecha;
         $liquidacion->retirada->save();
         return response()->json(['message' => 'Liquidacion creada correctamente'], 201);
     }

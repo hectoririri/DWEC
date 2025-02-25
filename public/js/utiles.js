@@ -68,6 +68,10 @@ let app = new Vue({
         logeado: false, // Booleano que indica si se ha logeado o no
         pantalla: "", //Pantalla actual
 
+        isEditing: false,
+
+        fecha_entrada_vehiculo: "",
+
         // Pagination and sorting
         pageSize: 10,
         currentPage: 1,
@@ -275,8 +279,9 @@ let app = new Vue({
                 console.error("Error al cargar la tarifa:", error);
             });
         },
+        // Cuando se selecciona un vehiculo en el formulario de retirada crear
         rellenarFormCreacionVehiculo() {
-            if (!this.formLiquidacion.id_retirada) return; // Add validation
+            if (!this.formLiquidacion.id_retirada) return;
             
             fetch(this.url + 'retiradas/' + this.formLiquidacion.id_retirada, {
                 method: 'GET',
@@ -285,7 +290,7 @@ let app = new Vue({
             .then(data => {
                 console.log("ID seleccionado:", this.formLiquidacion.id_retirada);
                 console.log("Vehiculo seleccionado:", data.tipo_vehiculo);
-
+                this.fecha_entrada_vehiculo = data.fecha_entrada;
                 // Buscamos el precio correspondiente en la lista de precios
                 this.precio_encontrado = this.precios.find(precio => precio.tipo === data.tipo_vehiculo);
                 this.fecha_entrada = data.fecha_entrada;
@@ -424,6 +429,8 @@ let app = new Vue({
         },
         // Mostrar el modal de editar una liquidación una vez cargado los datos de esta
         formularioEditarLiquidacion(id){
+            this.isEditing = true;
+
             $('#liquidacionEditarModal').modal('hide');
             this.liquidacion_seleccionada = {};
             
@@ -435,6 +442,9 @@ let app = new Vue({
                 .then(response => response.json())
                 .then(data => {
                     this.fecha_entrada = data.fecha_entrada;
+                    this.fecha_entrada_vehiculo = data.fecha_entrada;
+                    console.log(data.fecha_salida);
+                    
                     this.precio_encontrado = this.precios.find(precio => precio.tipo === data.tipo_vehiculo);
                     this.calcularPrecioHorasEdicion();
                 });
@@ -446,6 +456,7 @@ let app = new Vue({
         },
         //Mostrar el modal de crear una liquidación
         abrirModalLiquidacion() {
+            this.isEditing = false;
             $('#liquidacionCrearModal').modal('hide');  // Show the modal
             this.obtenerRetiradasDisponibles();
             // Reset the form
