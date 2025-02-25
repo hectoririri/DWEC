@@ -6,7 +6,11 @@ let app = new Vue({
         contrasena: "", // Modelo para el campo contraseña login
         rol: "", // Rol del usuario
         usuario: "", //Json del usuario logueado
-        usuario_seleccionado: "", //Json del usuario seleccionado al editar, eliminar...
+        usuario_seleccionado: {
+            email: '',
+            password: '',
+            rol: ''
+        }, //Json del usuario seleccionado al editar, eliminar...
         usuarios: [], // Lista usuarios
 
         // Retirada = Vehiculos
@@ -347,7 +351,7 @@ let app = new Vue({
             
             if (fechaActual > fechaEntrada) {
                 this.liquidacion_seleccionada.fecha = new Date(Date.now() + 3600000).toISOString().slice(0,16);
-                console.error("La fecha de liquidación debe ser posterior a la fecha de entrada");
+                // console.error("La fecha de liquidación debe ser posterior a la fecha de entrada");
                 return;
             }
             
@@ -769,6 +773,9 @@ let app = new Vue({
         formularioCrearUsuario(){
             // Cerrar cualquier modal abierto antes de abrir uno nuevo
             $('#createModal').modal('hide');
+            this.email = "";
+            this.contrasena = "";
+            this.rol = "";
             $('#createModal').modal('show');
         },
         formularioEditarUsuario(id) {
@@ -858,7 +865,7 @@ let app = new Vue({
                 body: JSON.stringify({
                     email: this.email,
                     rol: this.rol,
-                    password: this.contrasena // Asegúrate de que el campo se llame 'password'
+                    password: this.contrasena
                 })
             })
             .then(response => {
@@ -904,6 +911,8 @@ let app = new Vue({
             .then(response => response.json())
             .then(data => {
                 this.usuario_seleccionado = data;
+                console.log(this.usuario_seleccionado);
+                
                 return data;
             })
             .catch(error => {
