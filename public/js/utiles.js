@@ -36,6 +36,7 @@ let app = new Vue({
         // Liquidaciones = Retiradas 
         liquidaciones: {},
         liquidacion: {},
+        liquidacion_especifico: "",
         liquidacion_seleccionada: {},
         formLiquidacion: { // Json de campos formulario creación liquidacion
             id_retirada: '',
@@ -458,12 +459,18 @@ let app = new Vue({
                 });
             });
         },
+        abrirModalLiquidacionEspecifico(id) {
+            console.log(id);
+            this.abrirModalLiquidacion();
+            this.formLiquidacion.id_retirada = id;
+            this.rellenarFormCreacionVehiculo();
+        },
+
         //Mostrar el modal de crear una liquidación
         abrirModalLiquidacion() {
-            this.isEditing = false;
-            $('#liquidacionCrearModal').modal('hide');  // Show the modal
+            $('#liquidacionCrearModal').modal('hide'); 
             this.obtenerRetiradasDisponibles();
-            // Reset the form
+            // Reseteamos el formulario
             this.formLiquidacion = {
                 id_retirada: '',
                 nombre: '',
@@ -479,7 +486,6 @@ let app = new Vue({
                 total: '',
                 opciones_pago: '',
             };
-            this.rellenarFormCreacionVehiculo();
             $('#liquidacionCrearModal').modal('show');  // Show the modal
         },
 
@@ -491,7 +497,7 @@ let app = new Vue({
             .then(response => {
                 if (response.ok) {
                     this.obtenerLiquidaciones();
-                    this.nuevoLog('Eliminación liquidación', 'El administrador ha eliminado la liquidación '+this.liquidacion_seleccionada.id)
+                    this.nuevoLog('Eliminación retirada', 'El administrador ha eliminado la liquidación '+this.liquidacion_seleccionada.id)
                     this.liquidacion_seleccionada = {};
                     $('#liquidacionEliminarModal').modal('hide');
                 }
@@ -512,6 +518,8 @@ let app = new Vue({
             .then(response => {
                 if (response.ok) {
                     return response.json();
+                    this.nuevoLog('Creación retirada', 'El administrador ha creado la retirada '+this.liquidacion_seleccionada.id)
+
                 } else {
                     return response.json().then(data => {
                         throw new Error(data.message || 'Error al crear la liquidación');
@@ -995,6 +1003,107 @@ let app = new Vue({
             }
             this.currentSort = field;
         },
+
+        generarPDFLiquidacion(liquidacion) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Set font styles
+            doc.setFont('helvetica');
+            doc.setFontSize(11);
+        
+            // Header text
+            doc.text('La Policía Local ha procedido a retirar el vehículo que más abajo se reseña, en', 20, 20);
+            doc.text('cumplimiento de la Ordenanza Municipal Reguladora 2-07 (BOP núm. 247 de', 20, 25);
+            doc.text('29/12/2009) sobre Retirada y Depósito de vehículos de la vía pública.', 20, 30);
+        
+            // Vehicle Data Section
+            doc.setFillColor(200, 200, 200);
+            doc.rect(20, 40, 170, 10, 'F');
+            doc.setFont('helvetica', 'bold');
+            doc.text('DATOS DEL VEHÍCULO', 85, 46);
+        
+            // Vehicle details
+            doc.setFont('helvetica', 'normal');
+            doc.text('Matrícula', 30, 60);
+            doc.text('Marca', 90, 60);
+            doc.text('Modelo', 150, 60);
+            doc.line(20, 65, 190, 65); // Horizontal line
+        
+            doc.text('Lugar de recogida', 30, 75);
+            doc.text('Fecha y hora de recogida', 130, 75);
+            doc.line(20, 80, 190, 80);
+        
+            // Owner Data Section
+            doc.setFillColor(200, 200, 200);
+            doc.rect(20, 90, 170, 10, 'F');
+            doc.setFont('helvetica', 'bold');
+            doc.text('DATOS DEL PROPIETARIO', 85, 96);
+        
+            // Owner details
+            doc.setFont('helvetica', 'normal');
+            doc.text('Nombre y apellidos', 30, 110);
+            doc.text('NIF', 150, 110);
+            doc.line(20, 115, 190, 115);
+        
+            doc.text('Domicilio', 30, 125);
+            doc.line(20, 130, 190, 130);
+        
+            doc.text('Población', 30, 140);
+            doc.text('Provincia', 90, 140);
+            doc.text('Permiso', 150, 140);
+            doc.line(20, 145, 190, 145);
+        
+            // Delivery Data Section
+            doc.setFillColor(200, 200, 200);
+            doc.rect(20, 155, 170, 10, 'F');
+            doc.setFont('helvetica', 'bold');
+            doc.text('DATOS DE ENTREGA', 85, 161);
+        
+            // Delivery details
+            doc.setFont('helvetica', 'normal');
+            doc.text('Fecha y hora', 30, 175);
+            doc.text('Agente', 90, 175);
+            doc.text('Forma de pago', 150, 175);
+            doc.line(20, 180, 190, 180);
+        
+            doc.text('Importe Retirada', 30, 190);
+            doc.text('Importe Depósito', 90, 190);
+            doc.text('Total a pagar', 150, 190);
+            doc.line(20, 195, 190, 195);
+        
+            // Fill in the data
+            doc.setFont('helvetica', 'bold');
+            doc.text(liquidacion.matricula || '', 30, 65);
+            doc.text(liquidacion.marca || '', 90, 65);
+            doc.text(liquidacion.modelo || '', 150, 65);
+            doc.text(liquidacion.lugar || '', 30, 80);
+            doc.text(liquidacion.fecha || '', 130, 80);
+            doc.text(liquidacion.nombre || '', 30, 115);
+            doc.text(liquidacion.nif || '', 150, 115);
+            doc.text(liquidacion.domicilio || '', 30, 130);
+            doc.text(liquidacion.poblacion || '', 30, 145);
+            doc.text(liquidacion.provincia || '', 90, 145);
+            doc.text(liquidacion.permiso || '0', 150, 145);
+            doc.text(liquidacion.fecha || '', 30, 180);
+            doc.text(liquidacion.agente || '', 90, 180);
+            doc.text(liquidacion.opciones_pago || '', 150, 180);
+            doc.text(liquidacion.importe_retirada + '€' || '0€', 30, 195);
+            doc.text(liquidacion.importe_deposito + '€' || '0€', 90, 195);
+            doc.text(liquidacion.total + '€' || '0€', 150, 195);
+        
+            // Footer
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            doc.text('Recibe copia y firma', 20, 240);
+            doc.text('Conforme el conductor', 20, 250);
+            
+            const currentDate = new Date().toLocaleDateString('es-ES');
+            doc.text(`En Almonte a ${currentDate}`, 130, 245);
+        
+            // Save the PDF
+            doc.save(`liquidacion_${liquidacion.id}.pdf`);
+          }
     }
 })
 

@@ -24,6 +24,9 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
 
+    <!-- jsPDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
     <script src="js/utiles.js" defer></script>
 
   </head>
@@ -118,7 +121,7 @@
               <section>
                 <!-- Retiradas (admin) -->
                 <div v-if="pantalla === 'liquidacion'">
-                  <h1 class="text-center">Gestión de Retiradas de Vehículos</h1>
+                  <h1 class="text-center">Gestión de Retiradas</h1>
                   <!-- Botón para abrir el modal -->
                   <button class="btn btn-primary mt-3 w-100 p-3 mb-3 align-text-center" @click="abrirModalLiquidacion">
                     Crear Retirada
@@ -154,7 +157,7 @@
                       </div>
 
                       <!-- Table -->
-                      <table class="table table-striped table-hover table-bordered shadow-sm">
+                      <table class="table table-striped table-bordered shadow-sm text-center">
                         <thead class="table-dark">
                           <tr>
                             <th scope="col" class="align-middle text-center" @click="sortByLiquidaciones('id')">ID</th>
@@ -171,7 +174,7 @@
                             <th scope="col" class="align-middle text-center" @click="sortByLiquidaciones('importe_retirada')">Importe Retirada</th>
                             <th scope="col" class="align-middle text-center" @click="sortByLiquidaciones('importe_deposito')">Importe Deposito</th>
                             <th scope="col" class="align-middle text-center" @click="sortByLiquidaciones('total')">Total</th>
-                            <th scope="col" class="align-middle text-center" colspan="2">Acciones</th>
+                            <th scope="col" class="align-middle text-center" colspan="3">Acciones</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -204,6 +207,11 @@
                                       data-toggle="modal" 
                                       data-target="#liquidacionEliminarModal">
                                 <i class="fas fa-trash-alt me-1"></i> Eliminar
+                              </button>
+                            </td>
+                            <td class="text-center">
+                              <button @click="generarPDFLiquidacion(liquidacion)" class="btn btn-warning btn-sm">
+                                <i class="fas fa-file-pdf me-1"></i> Generar PDF
                               </button>
                             </td>
                           </tr>
@@ -239,7 +247,7 @@
                   </div>
                   <!-- Modales -->
 
-                  <!-- Modal añadir -->
+                  <!-- Modal añadir retirada -->
                   <div class="modal fade" id="liquidacionCrearModal" tabindex="-1" role="dialog" aria-labelledby="liquidacionCrearModalLabel" aria-hidden="true">
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
@@ -296,7 +304,7 @@
                                   <div class="col-md-12 mb-6">
                                     <label for="permiso" class="form-label">Permiso:</label>
                                     <input type="text" v-model="formLiquidacion.permiso" class="form-control" id="permiso" 
-                                      required pattern="[A-Z0-9-]{2,20}" title="El permiso debe contener letras mayúsculas, números y guiones (2-20 caracteres)">
+                                      required title="El permiso debe contener letras mayúsculas, números y guiones (2-20 caracteres)">
                                   </div>
                                   <div class="col-md-12 mb-6">
                                     <label for="fecha" class="form-label">Fecha Entrada Vehículo:</label>
@@ -359,7 +367,7 @@
                         </div>
                     </div>
                   </div>
-                   <!-- Modal eliminar -->
+                   <!-- Modal eliminar retirada-->
                   <div class="modal fade" id="liquidacionEliminarModal" tabindex="-1" role="dialog" aria-labelledby="liquidacionEliminarModalLabel" aria-hidden="true">
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
@@ -397,7 +405,7 @@
                         </div>
                     </div>
                   </div>
-                  <!-- Modal editar -->
+                  <!-- Modal editar retirada-->
                   <div class="modal fade" id="liquidacionEditarModal" tabindex="-1" role="dialog" aria-labelledby="liquidacionEditarModalLabel" aria-hidden="true">
                     <div class="modal-dialog" role="document">
                       <div class="modal-content">
@@ -509,11 +517,12 @@
                 <div v-if="pantalla === 'retiradas'">
                     <h1 class="text-center">Gestión de Vehículos</h1>
                     <!-- Botón para abrir el modal -->
-                    <button class="btn btn-primary mt-3 w-100 p-3 mb-3 align-text-center" @click="abrirModalRetirada">
+                    <button class="btn btn-primary mt-3 w-100 p-3 mb-3 align-text-center" 
+                    @click.prevent="abrirModalRetirada">
                       Agregar Vehículo
                     </button>
 
-                    <!-- Tabla para mostrar las retiradas -->
+                    <!-- Tabla para mostrar los vehiculos -->
                     <div class="table-responsive">
                       <div>
                         <!-- Search and length controls -->
@@ -541,30 +550,102 @@
                             </div>
                           </div>
                         </div>
-
                         <!-- Table -->
-                        <table class="table table-striped table-hover table-bordered shadow-sm">
+                        <table class="table table-bordered shadow-sm">
                           <thead class="table-dark">
                             <tr>
-                              <th scope="col" class="align-middle text-center" @click="sortByRetiradas('id')">ID</th>
-                              <th scope="col" class="align-middle text-center" @click="sortByRetiradas('fecha_entrada')">Fecha de entrada</th>
-                              <th scope="col" class="align-middle text-center" @click="sortByRetiradas('fecha_salida')">Fecha de salida</th>
-                              <th scope="col" class="align-middle text-center" @click="sortByRetiradas('lugar')">Lugar</th>
-                              <th scope="col" class="align-middle text-center" @click="sortByRetiradas('direccion')">Dirección</th>
-                              <th scope="col" class="align-middle text-center" @click="sortByRetiradas('agente')">Agente</th>
-                              <th scope="col" class="align-middle text-center" @click="sortByRetiradas('matricula')">Matrícula</th>
-                              <th scope="col" class="align-middle text-center" @click="sortByRetiradas('marca')">Marca</th>
-                              <th scope="col" class="align-middle text-center" @click="sortByRetiradas('modelo')">Modelo</th>
-                              <th scope="col" class="align-middle text-center" @click="sortByRetiradas('color')">Color</th>
-                              <th scope="col" class="align-middle text-center" @click="sortByRetiradas('motivo')">Motivo</th>
-                              <th scope="col" class="align-middle text-center" @click="sortByRetiradas('tipo_vehiculo')">Tipo Vehículo</th>
-                              <th scope="col" class="align-middle text-center" @click="sortByRetiradas('grua')">Grúa</th>
-                              <th scope="col" class="align-middle text-center" @click="sortByRetiradas('estado')">Estado</th>
-                              <th scope="col" class="align-middle text-center" colspan="2">Acciones</th>
+                              <th scope="col" class="align-middle text-center" @click="sortByRetiradas('id')">
+                                ID
+                                <span v-if="currentSortRetiradas === 'id'">
+                                  {{ currentSortDirRetiradas === 'asc' ? '▲' : '▼' }}
+                                </span>
+                              </th>
+                              <th scope="col" class="align-middle text-center" @click="sortByRetiradas('fecha_entrada')">
+                                Fecha de entrada
+                                <span v-if="currentSortRetiradas === 'fecha_entrada'">
+                                  {{ currentSortDirRetiradas === 'asc' ? '▲' : '▼' }}
+                                </span>
+                              </th>
+                              <th scope="col" class="align-middle text-center" @click="sortByRetiradas('fecha_salida')">
+                                Fecha de salida
+                                <span v-if="currentSortRetiradas === 'fecha_salida'">
+                                  {{ currentSortDirRetiradas === 'asc' ? '▲' : '▼' }}
+                                </span>
+                              </th>
+                              <th scope="col" class="align-middle text-center" @click="sortByRetiradas('lugar')">
+                                Lugar
+                                <span v-if="currentSortRetiradas === 'lugar'">
+                                  {{ currentSortDirRetiradas === 'asc' ? '▲' : '▼' }}
+                                </span>
+                              </th>
+                              <th scope="col" class="align-middle text-center" @click="sortByRetiradas('direccion')">
+                                Dirección
+                                <span v-if="currentSortRetiradas === 'direccion'">
+                                  {{ currentSortDirRetiradas === 'asc' ? '▲' : '▼' }}
+                                </span>
+                              </th>
+                              <th scope="col" class="align-middle text-center" @click="sortByRetiradas('agente')">
+                                Agente
+                                <span v-if="currentSortRetiradas === 'agente'">
+                                  {{ currentSortDirRetiradas === 'asc' ? '▲' : '▼' }}
+                                </span>
+                              </th>
+                              <th scope="col" class="align-middle text-center" @click="sortByRetiradas('matricula')">
+                                Matrícula
+                                <span v-if="currentSortRetiradas === 'matricula'">
+                                  {{ currentSortDirRetiradas === 'asc' ? '▲' : '▼' }}
+                                </span>
+                              </th>
+                              <th scope="col" class="align-middle text-center" @click="sortByRetiradas('marca')">
+                                Marca
+                                <span v-if="currentSortRetiradas === 'marca'">
+                                  {{ currentSortDirRetiradas === 'asc' ? '▲' : '▼' }}
+                                </span>
+                              </th>
+                              <th scope="col" class="align-middle text-center" @click="sortByRetiradas('modelo')">
+                                Modelo
+                                <span v-if="currentSortRetiradas === 'modelo'">
+                                  {{ currentSortDirRetiradas === 'asc' ? '▲' : '▼' }}
+                                </span>
+                              </th>
+                              <th scope="col" class="align-middle text-center" @click="sortByRetiradas('color')">
+                                Color
+                                <span v-if="currentSortRetiradas === 'color'">
+                                  {{ currentSortDirRetiradas === 'asc' ? '▲' : '▼' }}
+                                </span>
+                              </th>
+                              <th scope="col" class="align-middle text-center" @click="sortByRetiradas('motivo')">
+                                Motivo
+                                <span v-if="currentSortRetiradas === 'motivo'">
+                                  {{ currentSortDirRetiradas === 'asc' ? '▲' : '▼' }}
+                                </span>
+                              </th>
+                              <th scope="col" class="align-middle text-center" @click="sortByRetiradas('tipo_vehiculo')">
+                                Tipo Vehículo
+                                <span v-if="currentSortRetiradas === 'tipo_vehiculo'">
+                                  {{ currentSortDirRetiradas === 'asc' ? '▲' : '▼' }}
+                                </span>
+                              </th>
+                              <th scope="col" class="align-middle text-center" @click="sortByRetiradas('grua')">
+                                Grúa
+                                <span v-if="currentSortRetiradas === 'grua'">
+                                  {{ currentSortDirRetiradas === 'asc' ? '▲' : '▼' }}
+                                </span>
+                              </th>
+                              <th scope="col" class="align-middle text-center" @click="sortByRetiradas('estado')">
+                                Estado
+                                <span v-if="currentSortRetiradas === 'estado'">
+                                  {{ currentSortDirRetiradas === 'asc' ? '▲' : '▼' }}
+                                </span>
+                              </th>
+                              <th scope="col" class="align-middle text-center" colspan="3">Acciones</th>
                             </tr>
                           </thead>
                           <tbody>
-                            <tr v-for="retirada in paginatedAndFilteredRetiradas" class="align-middle">
+                            <tr v-for="retirada in paginatedAndFilteredRetiradas" 
+                                class="align-middle"
+                                :class="{'table-primary': retirada.estado === 'En depósito', 
+                                        'table-success': retirada.estado === 'Retirado'}">
                               <td class="text-center">{{ retirada.id }}</td>
                               <td class="text-center">{{ retirada.fecha_entrada }}</td>
                               <td class="text-center">{{ retirada.fecha_salida }}</td>
@@ -593,6 +674,13 @@
                                         data-toggle="modal" 
                                         data-target="#retiradaEliminarModal">
                                   <i class="fas fa-trash-alt me-1"></i> Eliminar
+                                </button>
+                              </td>
+                              
+                              <td class="text-center" v-if="retirada.estado == 'En depósito'">
+                                <button @click="abrirModalLiquidacionEspecifico(retirada.id)"
+                                  class="btn btn-warning btn-sm">
+                                  <i class="fas fa-file me-1"></i> Facturar
                                 </button>
                               </td>
                             </tr>
@@ -626,75 +714,212 @@
                         </div>
                       </div>
                     
+                      <!-- Modal retirada especifica -->
+                    <div class="modal fade" id="liquidacionCrearModal" tabindex="-1" role="dialog" aria-labelledby="liquidacionCrearModalLabel" aria-hidden="true">
+                      <div class="modal-dialog modal-xl" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="liquidacionCrearModalLabel">Creación de Retirada</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                          </div>
+                          <form @submit.prevent="crearLiquidacion">
+                            <div class="modal-body">
+                              <div class="container-fluid">
+                                <div class="row">
+                                  <!-- Left column -->
+                                  <div class="col-md-6">
+                                    <div class="form-group mb-2">
+                                      <label for="id" class="form-label">ID Vehiculo:</label>
+                                      <input type="text" v-model="formLiquidacion.id_retirada" class="form-control form-control-sm" id="id_retirada" disabled>
+                                    </div>
+                                    
+                                    <div class="form-group mb-2">
+                                      <label for="nombre" class="form-label">Nombre:</label>
+                                      <input type="text" v-model="formLiquidacion.nombre" class="form-control form-control-sm" id="nombre" 
+                                        required pattern="[A-Za-zÀ-ÿ\s]{2,50}" title="El nombre debe contener solo letras y espacios (2-50 caracteres)">
+                                    </div>
+
+                                    <div class="form-group mb-2">
+                                      <label for="nif" class="form-label">NIF:</label>
+                                      <input type="text" v-model="formLiquidacion.nif" class="form-control form-control-sm" id="nif"
+                                        required pattern="[0-9]{8}[A-Z]{1}" title="Formato NIF: 8 números seguidos de una letra mayúscula">
+                                    </div>
+
+                                    <div class="form-group mb-2">
+                                      <label for="domicilio" class="form-label">Domicilio:</label>
+                                      <input type="text" v-model="formLiquidacion.domicilio" class="form-control form-control-sm" id="domicilio"
+                                        required minlength="5" maxlength="100" title="El domicilio debe tener entre 5 y 100 caracteres">
+                                    </div>
+
+                                    <div class="form-group mb-2">
+                                      <label for="poblacion" class="form-label">Población:</label>
+                                      <input type="text" v-model="formLiquidacion.poblacion" class="form-control form-control-sm" id="poblacion"
+                                        required pattern="[A-Za-zÀ-ÿ\s]{2,50}" title="La población debe contener solo letras y espacios (2-50 caracteres)">
+                                    </div>
+
+                                    <div class="form-group mb-2">
+                                      <label for="provincia" class="form-label">Provincia:</label>
+                                      <input type="text" v-model="formLiquidacion.provincia" class="form-control form-control-sm" id="provincia"
+                                        required pattern="[A-Za-zÀ-ÿ\s]{2,50}" title="La provincia debe contener solo letras y espacios (2-50 caracteres)">
+                                    </div>
+
+                                    <div class="form-group mb-2">
+                                      <label for="permiso" class="form-label">Permiso:</label>
+                                      <input type="text" v-model="formLiquidacion.permiso" class="form-control form-control-sm" id="permiso"
+                                        required title="El permiso debe contener letras mayúsculas, números y guiones (2-20 caracteres)">
+                                    </div>
+                                  </div>
+
+                                  <!-- Right column -->
+                                  <div class="col-md-6">
+                                    <div class="form-group mb-2">
+                                      <label for="fecha_entrada" class="form-label">Fecha Entrada:</label>
+                                      <input type="datetime-local" v-model="fecha_entrada_vehiculo" class="form-control form-control-sm" id="fecha_entrada" required readonly>
+                                    </div>
+
+                                    <div class="form-group mb-2">
+                                      <label for="fecha_salida" class="form-label">Fecha Salida:</label>
+                                      <input type="datetime-local" v-model="formLiquidacion.fecha" class="form-control form-control-sm" id="fecha_salida"
+                                        @change="calcularPrecioHoras" required>
+                                    </div>
+
+                                    <div class="form-group mb-2">
+                                      <label for="agente" class="form-label">Agente:</label>
+                                      <input type="text" v-model="formLiquidacion.agente" class="form-control form-control-sm" id="agente"
+                                        required pattern="[A-Za-zÀ-ÿ\s]{2,50}" title="El nombre del agente debe contener solo letras y espacios (2-50 caracteres)">
+                                    </div>
+
+                                    <div class="form-group mb-2">
+                                      <label for="importe_retirada" class="form-label">Importe Retirada:</label>
+                                      <input type="number" disabled v-model="formLiquidacion.importe_retirada" class="form-control form-control-sm" id="importe_retirada" required>
+                                    </div>
+
+                                    <div class="form-group mb-2">
+                                      <label for="importe_deposito" class="form-label">Importe Deposito:</label>
+                                      <input type="number" disabled v-model="formLiquidacion.importe_deposito" class="form-control form-control-sm" id="importe_deposito"
+                                        required step="0.01" min="0" max="9999.99" title="El importe debe ser un número positivo con hasta 2 decimales">
+                                    </div>
+
+                                    <div class="form-group mb-2">
+                                      <label for="total" class="form-label">Total:</label>
+                                      <input type="number" disabled v-model="formLiquidacion.total" class="form-control form-control-sm" id="total"
+                                        required step="0.01" min="0" max="99999.99" title="El total debe ser un número positivo con hasta 2 decimales">
+                                    </div>
+
+                                    <div class="form-group mb-2">
+                                      <label for="opciones_pago" class="form-label">Opciones Pago:</label>
+                                      <select v-model="formLiquidacion.opciones_pago" class="form-control form-control-sm" id="opciones_pago" required>
+                                        <option value="Metálico">Metálico</option>
+                                        <option value="Tarjeta">Tarjeta</option>
+                                        <option value="Bizum">Bizum</option>
+                                      </select>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                              <button type="submit" class="btn btn-primary">Crear liquidación</button>
+                            </div>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+
                     <!-- Crear vehiculo -->
                     <div class="modal fade" id="retiradaCrearModal" tabindex="-1" role="dialog" aria-labelledby="retiradaCrearModalLabel" aria-hidden="true">
-                      <div class="modal-dialog" role="document">
-                          <div class="modal-content">
-                              <div class="modal-header">
-                                  <h5 class="modal-title" id="retiradaCrearModalLabel">Creación de Vehículo</h5>
-                                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                      <span aria-hidden="true">&times;</span>
-                                  </button>
-                              </div>
-                              <div class="modal-body">
-                                <div class="row">
-                                  <div class="col-md-12 mb-6">
+                      <div class="modal-dialog modal-xl" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="retiradaCrearModalLabel">Creación de Vehículo</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                          </div>
+                          <form @submit.prevent="crearRetirada" id="formRetirada" class="modal-body needs-validation">
+                            <div class="container-fluid">
+                              <div class="row">
+                                <!-- Columna izquierda -->
+                                <div class="col-md-6">
+                                  <div class="form-group mb-2">
                                     <label for="id" class="form-label">ID:</label>
-                                    <input type="text" :value="formRetirada.id = getUltimoId()" class="form-control" id="id" disabled>
+                                    <input type="text" :value="formRetirada.id" class="form-control form-control-sm" id="id" disabled>
                                   </div>
-                                  <div class="col-md-12 mb-6">
+                                  <div class="form-group mb-2">
                                     <label for="fecha_entrada" class="form-label">Fecha de Entrada:</label>
-                                    <input type="datetime-local" v-model="formRetirada.fecha_entrada = new Date(Date.now() + 3600000).toISOString().slice(0,16)" class="form-control" id="fecha_entrada" required>
+                                    <input type="datetime-local" v-model="formRetirada.fecha_entrada = new Date(Date.now() + 3600000).toISOString().slice(0,16)" 
+                                          class="form-control form-control-sm" id="fecha_entrada" required>
+                                    <div class="invalid-feedback">La fecha de entrada es requerida</div>
                                   </div>
-                                </div>
-                                <div class="row">
-                                  <div class="col-md-12 mb-6">
+                                  <div class="form-group mb-2">
                                     <label for="fecha_salida" class="form-label">Fecha de Salida:</label>
-                                    <input type="datetime-local" v-model="formRetirada.fecha_salida" disabled class="form-control" id="fecha_salida">
+                                    <input type="datetime-local" v-model="formRetirada.fecha_salida" disabled 
+                                          class="form-control form-control-sm" id="fecha_salida">
                                   </div>
-                                  <div class="col-md-12 mb-6">
+                                  <div class="form-group mb-2">
                                     <label for="lugar" class="form-label">Lugar:</label>
-                                    <input type="text" v-model="formRetirada.lugar" class="form-control" id="lugar" required>
+                                    <input type="text" v-model="formRetirada.lugar" class="form-control form-control-sm" 
+                                          id="lugar" required minlength="3" maxlength="100"
+                                          pattern="[A-Za-zÀ-ÿ\s]{3,100}">
+                                    <div class="invalid-feedback">El lugar debe contener entre 3 y 100 caracteres, solo letras y espacios</div>
                                   </div>
-                                </div>
-                                <div class="row">
-                                  <div class="col-md-12 mb-6">
+                                  <div class="form-group mb-2">
                                     <label for="direccion" class="form-label">Dirección:</label>
-                                    <input type="text" v-model="formRetirada.direccion" class="form-control" id="direccion" required>
+                                    <input type="text" v-model="formRetirada.direccion" class="form-control form-control-sm" 
+                                          id="direccion" required minlength="5" maxlength="200">
+                                    <div class="invalid-feedback">La dirección debe contener entre 5 y 200 caracteres</div>
                                   </div>
-                                  <div class="col-md-12 mb-6">
+                                  <div class="form-group mb-2">
                                     <label for="agente" class="form-label">Agente:</label>
-                                    <input type="text" v-model="formRetirada.agente" class="form-control" id="agente" required>
+                                    <input type="text" v-model="formRetirada.agente" class="form-control form-control-sm" 
+                                          id="agente" required minlength="3" maxlength="50"
+                                          pattern="[A-Za-zÀ-ÿ\s]{3,50}">
+                                    <div class="invalid-feedback">El nombre del agente debe contener entre 3 y 50 caracteres, solo letras y espacios</div>
                                   </div>
-                                </div>
-                                <div class="row">
-                                  <div class="col-md-12 mb-6">
+                                  <div class="form-group mb-2">
                                     <label for="matricula" class="form-label">Matrícula:</label>
-                                    <input type="text" v-model="formRetirada.matricula" class="form-control" id="matricula" required>
+                                    <input type="text" v-model="formRetirada.matricula" class="form-control form-control-sm" 
+                                          id="matricula" required
+                                          pattern="[0-9]{4}[A-Z]{3}|[A-Z]{1,2}[0-9]{4}[A-Z]{1,2}">
+                                    <div class="invalid-feedback">Formato de matrícula inválido. Debe ser 1234ABC o AB1234C</div>
                                   </div>
-                                  <div class="col-md-12 mb-6">
+                                </div>
+                                
+                                <!-- Columna derecha -->
+                                <div class="col-md-6">
+                                  <div class="form-group mb-2">
                                     <label for="marca" class="form-label">Marca:</label>
-                                    <input type="text" v-model="formRetirada.marca" class="form-control" id="marca" required>
+                                    <input type="text" v-model="formRetirada.marca" class="form-control form-control-sm" 
+                                          id="marca" required minlength="2" maxlength="50">
+                                    <div class="invalid-feedback">La marca debe contener entre 2 y 50 caracteres</div>
                                   </div>
-                                </div>
-                                <div class="row">
-                                  <div class="col-md-12 mb-6">
+                                  <div class="form-group mb-2">
                                     <label for="modelo" class="form-label">Modelo:</label>
-                                    <input type="text" v-model="formRetirada.modelo" class="form-control" id="modelo" required>
+                                    <input type="text" v-model="formRetirada.modelo" class="form-control form-control-sm" 
+                                          id="modelo" required minlength="1" maxlength="50">
+                                    <div class="invalid-feedback">El modelo debe contener entre 1 y 50 caracteres</div>
                                   </div>
-                                  <div class="col-md-12 mb-6">
+                                  <div class="form-group mb-2">
                                     <label for="color" class="form-label">Color:</label>
-                                    <input type="text" v-model="formRetirada.color" class="form-control" id="color" required>
+                                    <input type="text" v-model="formRetirada.color" class="form-control form-control-sm" 
+                                          id="color" required minlength="3" maxlength="20"
+                                          pattern="[A-Za-zÀ-ÿ\s]{3,20}">
+                                    <div class="invalid-feedback">El color debe contener entre 3 y 20 caracteres, solo letras</div>
                                   </div>
-                                </div>
-                                <div class="row">
-                                  <div class="col-md-12 mb-6">
+                                  <div class="form-group mb-2">
                                     <label for="motivo" class="form-label">Motivo:</label>
-                                    <input type="text" v-model="formRetirada.motivo" class="form-control" id="motivo" required>
+                                    <input type="text" v-model="formRetirada.motivo" class="form-control form-control-sm" 
+                                          id="motivo" required minlength="5" maxlength="200">
+                                    <div class="invalid-feedback">El motivo debe contener entre 5 y 200 caracteres</div>
                                   </div>
-                                  <div class="col-md-12 mb-6">
+                                  <div class="form-group mb-2">
                                     <label for="tipo_vehiculo" class="form-label">Tipo de Vehículo:</label>
-                                    <select v-model="formRetirada.tipo_vehiculo" class="form-control"  id="tipo_vehiculo" required>
+                                    <select v-model="formRetirada.tipo_vehiculo" class="form-control form-control-sm" 
+                                            id="tipo_vehiculo" required>
+                                      <option value="" disabled selected>Seleccione tipo de vehículo</option>
                                       <option value="Motocicleta, aperos, motocarros y similares">Motocicleta, aperos, motocarros y similares</option>
                                       <option value="Turismo hasta 12 cv o Remolques hasta 750 kg">Turismo hasta 12 cv o Remolques hasta 750 kg</option>
                                       <option value="Turismos más de 12 cv o Remolques más de 750 kg">Turismos más de 12 cv o Remolques más de 750 kg</option>
@@ -702,42 +927,47 @@
                                       <option value="Vehiculos de cortesia">Vehiculos de cortesia</option>
                                       <option value="Chatarra">Chatarra</option>
                                     </select>
+                                    <div class="invalid-feedback">Debe seleccionar un tipo de vehículo</div>
                                   </div>
-                                </div>
-                                <div class="row">
-                                  <div class="col-md-12 mb-6">
+                                  <div class="form-group mb-2">
                                     <label for="grua" class="form-label">Grúa:</label>
-                                    <select v-model="formRetirada.grua" class="form-control"  id="grua" required>
+                                    <select v-model="formRetirada.grua" class="form-control form-control-sm" 
+                                            id="grua" required>
+                                      <option value="" disabled selected>Seleccione grua usada</option>
                                       <option value="Grua Este">Grua Este</option>
                                       <option value="Grua Norte">Grua Norte</option>
                                       <option value="Grua Ajandemol">Grua Ajandemol</option>
                                       <option value="Grua Omega">Grua Omega</option>
                                       <option value="Grua Sigma">Grua Sigma</option>
                                     </select>
+                                    <div class="invalid-feedback">Debe seleccionar una grúa</div>
                                   </div>
-                                  <div class="col-md-12 mb-6">
+                                  <div class="form-group mb-2">
                                     <label for="estado" class="form-label">Estado:</label>
-                                    <select v-model="formRetirada.estado" class="form-control" id="estado" disabled>
-                                    <option value="En depósito">En depósito</option>
-                                    <option value="Liquidado">Liquidado</option>
+                                    <select v-model="formRetirada.estado" class="form-control form-control-sm" 
+                                            id="estado" disabled>
+                                      <option value="En depósito">En depósito</option>
+                                      <option value="Retirado">Retirado</option>
                                     </select>
                                   </div>
                                 </div>
                               </div>
-                              <div class="modal-footer">
-                                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                                  <button type="button" class="btn btn-primary" @click="crearRetirada">Crear retirada</button>
-                              </div>
-                          </div>
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                              <button type="submit" class="btn btn-primary">Crear retirada</button>
+                            </div>
+                          </form>
+                        </div>
                       </div>
                     </div>
 
                     <!-- Eliminar vehiculo -->
                     <div class="modal fade" id="retiradaEliminarModal" tabindex="-1" role="dialog" aria-labelledby="retiradaEliminarModalLabel" aria-hidden="true">
-                      <div class="modal-dialog" role="document">
+                      <div class="modal-dialog modal-xl" role="document">
                           <div class="modal-content">
                               <div class="modal-header">
-                                  <h5 class="modal-title" id="retiradaEliminarModalLabel">Eliminación de retirada</h5>
+                                  <h5 class="modal-title" id="retiradaEliminarModalLabel">Eliminación de vehículo</h5>
                                   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                       <span aria-hidden="true">&times;</span>
                                   </button>
@@ -759,106 +989,120 @@
 
                     <!-- Editar vehiculo -->
                     <div class="modal fade" id="retiradaEditarModal" tabindex="-1" role="dialog" aria-labelledby="retiradaEditarModalLabel" aria-hidden="true">
-                      <div class="modal-dialog" role="document">
+                      <div class="modal-dialog modal-xl" role="document">
                           <div class="modal-content">
                               <div class="modal-header">
-                                  <h5 class="modal-title" id="retiradaEditarModalLabel">Modificación de retirada</h5>
+                                  <h5 class="modal-title" id="retiradaEditarModalLabel">Modificación de vehículo</h5>
                                   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                       <span aria-hidden="true">&times;</span>
                                   </button>
                               </div>
-                              <div class="modal-body">
-                                <div class="row">
-                                  <div class="col-md-12 mb-6">
-                                    <label for="id" class="form-label">ID:</label>
-                                    <input type="text" v-model="retirada_seleccionada.id" class="form-control" id="id" required>
-                                  </div>
-                                  <div class="col-md-12 mb-6">
-                                    <label for="fecha_entrada" class="form-label">Fecha de Entrada:</label>
-                                    <input type="datetime-local" v-model="retirada_seleccionada.fecha_entrada" class="form-control" id="fecha_entrada" required>
+                              <form @submit.prevent="editarRetirada" class="needs-validation">
+                                <div class="modal-body">
+                                  <div class="container-fluid">
+                                    <div class="row">
+                                      <!-- Left Column -->
+                                      <div class="col-md-6">
+                                        <div class="form-group mb-3">
+                                          <label for="id" class="form-label">ID:</label>
+                                          <input type="text" v-model="retirada_seleccionada.id" class="form-control" id="id" required disabled>
+                                        </div>
+                                        <div class="form-group mb-3">
+                                          <label for="fecha_entrada" class="form-label">Fecha de Entrada:</label>
+                                          <input type="datetime-local" v-model="retirada_seleccionada.fecha_entrada" class="form-control" id="fecha_entrada" required>
+                                          <div class="invalid-feedback">La fecha de entrada es requerida</div>
+                                        </div>
+                                        <div class="form-group mb-3" v-if="retirada_seleccionada.fecha_salida == null">
+                                          <label for="fecha_salida" class="form-label">Fecha de Salida:</label>
+                                          <input type="datetime-local" v-model="retirada_seleccionada.fecha_salida" class="form-control" id="fecha_salida" disabled>
+                                        </div>
+                                        <div class="form-group mb-3" v-else>
+                                          <label for="fecha_salida" class="form-label">Fecha de Salida:</label>
+                                          <input type="datetime-local" v-model="retirada_seleccionada.fecha_salida" class="form-control" id="fecha_salida">
+                                        </div>
+                                        <div class="form-group mb-3">
+                                          <label for="lugar" class="form-label">Lugar:</label>
+                                          <input type="text" v-model="retirada_seleccionada.lugar" class="form-control" id="lugar" required
+                                            pattern="[A-Za-zÀ-ÿ\s]{3,100}" title="El lugar debe contener entre 3 y 100 caracteres, solo letras y espacios">
+                                        </div>
+                                        <div class="form-group mb-3">
+                                          <label for="direccion" class="form-label">Dirección:</label>
+                                          <input type="text" v-model="retirada_seleccionada.direccion" class="form-control" id="direccion" required
+                                            minlength="5" maxlength="200">
+                                        </div>
+                                        <div class="form-group mb-3">
+                                          <label for="agente" class="form-label">Agente:</label>
+                                          <input type="text" v-model="retirada_seleccionada.agente" class="form-control" id="agente" required
+                                            pattern="[A-Za-zÀ-ÿ\s]{3,50}">
+                                        </div>
+                                        <div class="form-group mb-3">
+                                          <label for="matricula" class="form-label">Matrícula:</label>
+                                          <input type="text" v-model="retirada_seleccionada.matricula" class="form-control" id="matricula" required
+                                            pattern="[0-9]{4}[A-Z]{3}|[A-Z]{1,2}[0-9]{4}[A-Z]{1,2}">
+                                        </div>
+                                      </div>
+                                      
+                                      <!-- Right Column -->
+                                      <div class="col-md-6">
+                                        <div class="form-group mb-3">
+                                          <label for="marca" class="form-label">Marca:</label>
+                                          <input type="text" v-model="retirada_seleccionada.marca" class="form-control" id="marca" required
+                                            minlength="2" maxlength="50">
+                                        </div>
+                                        <div class="form-group mb-3">
+                                          <label for="modelo" class="form-label">Modelo:</label>
+                                          <input type="text" v-model="retirada_seleccionada.modelo" class="form-control" id="modelo" required
+                                            minlength="2" maxlength="50">
+                                        </div>
+                                        <div class="form-group mb-3">
+                                          <label for="color" class="form-label">Color:</label>
+                                          <input type="text" v-model="retirada_seleccionada.color" class="form-control" id="color" required
+                                            pattern="[A-Za-zÀ-ÿ\s]{3,20}">
+                                        </div>
+                                        <div class="form-group mb-3">
+                                          <label for="motivo" class="form-label">Motivo:</label>
+                                          <input type="text" v-model="retirada_seleccionada.motivo" class="form-control" id="motivo" required
+                                            minlength="5" maxlength="200">
+                                        </div>
+                                        <div class="form-group mb-3">
+                                          <label for="tipo_vehiculo" class="form-label">Tipo de Vehículo:</label>
+                                          <select v-model="retirada_seleccionada.tipo_vehiculo" class="form-control" id="tipo_vehiculo" required>
+                                            <option value="">Seleccione tipo de vehículo</option>
+                                            <option value="Motocicleta, aperos, motocarros y similares">Motocicleta, aperos, motocarros y similares</option>
+                                            <option value="Turismo hasta 12 cv o Remolques hasta 750 kg">Turismo hasta 12 cv o Remolques hasta 750 kg</option>
+                                            <option value="Turismos más de 12 cv o Remolques más de 750 kg">Turismos más de 12 cv o Remolques más de 750 kg</option>
+                                            <option value="Vehiculos especiales">Vehículos especiales</option>
+                                            <option value="Vehiculos de cortesia">Vehiculos de cortesia</option>
+                                            <option value="Chatarra">Chatarra</option>
+                                          </select>
+                                        </div>
+                                        <div class="form-group mb-3">
+                                          <label for="grua" class="form-label">Grúa:</label>
+                                          <select v-model="retirada_seleccionada.grua" class="form-control" id="grua" required>
+                                            <option value="">Seleccione grúa</option>
+                                            <option value="Grua Este">Grua Este</option>
+                                            <option value="Grua Norte">Grua Norte</option>
+                                            <option value="Grua Ajandemol">Grua Ajandemol</option>
+                                            <option value="Grua Omega">Grua Omega</option>
+                                            <option value="Grua Sigma">Grua Sigma</option>
+                                          </select>
+                                        </div>
+                                        <div class="form-group mb-3">
+                                          <label for="estado" class="form-label">Estado:</label>
+                                          <select v-model="retirada_seleccionada.estado" class="form-control" id="estado" disabled>
+                                            <option value="En depósito">En depósito</option>
+                                            <option value="Retirado">Retirado</option>
+                                          </select>
+                                        </div>
+                                      </div>
+                                    </div>
                                   </div>
                                 </div>
-                                <div class="row">
-                                  <div class="col-md-12 mb-6">
-                                    <label for="fecha_salida" class="form-label">Fecha de Salida:</label>
-                                    <input type="datetime-local" v-model="retirada_seleccionada.fecha_salida" class="form-control" id="fecha_salida">
-                                  </div>
-                                  <div class="col-md-12 mb-6">
-                                    <label for="lugar" class="form-label">Lugar:</label>
-                                    <input type="text" v-model="retirada_seleccionada.lugar" class="form-control" id="lugar" required>
-                                  </div>
+                                <div class="modal-footer">
+                                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                                  <button type="submit" class="btn btn-warning">Editar retirada</button>
                                 </div>
-                                <div class="row">
-                                  <div class="col-md-12 mb-6">
-                                    <label for="direccion" class="form-label">Dirección:</label>
-                                    <input type="text" v-model="retirada_seleccionada.direccion" class="form-control" id="direccion" required>
-                                  </div>
-                                  <div class="col-md-12 mb-6">
-                                    <label for="agente" class="form-label">Agente:</label>
-                                    <input type="text" v-model="retirada_seleccionada.agente" class="form-control" id="agente" required>
-                                  </div>
-                                </div>
-                                <div class="row">
-                                  <div class="col-md-12 mb-6">
-                                    <label for="matricula" class="form-label">Matrícula:</label>
-                                    <input type="text" v-model="retirada_seleccionada.matricula" class="form-control" id="matricula" required>
-                                  </div>
-                                  <div class="col-md-12 mb-6">
-                                    <label for="marca" class="form-label">Marca:</label>
-                                    <input type="text" v-model="retirada_seleccionada.marca" class="form-control" id="marca" required>
-                                  </div>
-                                </div>
-                                <div class="row">
-                                  <div class="col-md-12 mb-6">
-                                    <label for="modelo" class="form-label">Modelo:</label>
-                                    <input type="text" v-model="retirada_seleccionada.modelo" class="form-control" id="modelo" required>
-                                  </div>
-                                  <div class="col-md-12 mb-6">
-                                    <label for="color" class="form-label">Color:</label>
-                                    <input type="text" v-model="retirada_seleccionada.color" class="form-control" id="color" required>
-                                  </div>
-                                </div>
-                                <div class="row">
-                                  <div class="col-md-12 mb-6">
-                                    <label for="motivo" class="form-label">Motivo:</label>
-                                    <input type="text" v-model="retirada_seleccionada.motivo" class="form-control" id="motivo" required>
-                                  </div>
-                                  <div class="col-md-12 mb-6">
-                                    <label for="tipo_vehiculo" class="form-label">Tipo de Vehículo:</label>
-                                    <select id="" v-model="retirada_seleccionada.tipo_vehiculo" class="form-control"  id="tipo_vehiculo" required>
-                                      <option value="Motocicleta, aperos, motocarros y similares">Motocicleta, aperos, motocarros y similares</option>
-                                      <option value="Turismo hasta 12 cv o Remolques hasta 750 kg">Turismo hasta 12 cv o Remolques hasta 750 kg</option>
-                                      <option value="Turismos más de 12 cv o Remolques más de 750 kg">Turismos más de 12 cv o Remolques más de 750 kg</option>
-                                      <option value="Vehiculos especiales">Vehículos especiales</option>
-                                      <option value="Vehiculos de cortesia">Vehiculos de cortesia</option>
-                                      <option value="Chatarra">Chatarra</option>
-                                    </select>
-                                  </div>
-                                </div>
-                                <div class="row">
-                                  <div class="col-md-12 mb-6">
-                                    <label for="grua" class="form-label">Grúa:</label>
-                                    <select id="" v-model="retirada_seleccionada.grua" class="form-control"  id="grua" required>
-                                      <option value="Grua Este" :selected="retirada_seleccionada.grua === 'Grua Este'">Grua Este</option>
-                                      <option value="Grua Norte" :selected="retirada_seleccionada.grua === 'Grua Norte'">Grua Norte</option>
-                                      <option value="Grua Ajandemol" :selected="retirada_seleccionada.grua === 'Grua Ajandemol'">Grua Ajandemol</option>
-                                      <option value="Grua Omega" :selected="retirada_seleccionada.grua === 'Grua Omega'">Grua Omega</option>
-                                      <option value="Grua Sigma" :selected="retirada_seleccionada.grua === 'Grua Sigma'">Grua Sigma</option>
-                                    </select>
-                                  </div>
-                                  <div class="col-md-12 mb-6">
-                                    <label for="estado" class="form-label">Estado:</label>
-                                    <select v-model="retirada_seleccionada.estado" class="form-control" id="estado">
-                                    <option value="En depósito">En depósito</option>
-                                    <option value="Liquidado">Liquidado</option>
-                                    </select>
-                                  </div>
-                                </div>
-                              </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                                <button type="button" class="btn btn-warning" @click="editarRetirada">Editar retirada</button>
-                            </div>
+                              </form>
                           </div>
                       </div>
                     </div>
@@ -899,7 +1143,7 @@
                       </div>
 
                       <!-- Table -->
-                      <table class="table table-striped table-hover table-bordered shadow-sm text-center">
+                      <table class="table table-striped table-bordered shadow-sm text-center">
                         <thead class="table-dark">
                           <tr>
                             <th v-for="column in columns" 
@@ -978,7 +1222,7 @@
 
                   <!-- Modal crear usuario -->
                   <div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="createModalLabel" aria-hidden="true">
-                    <div class="modal-dialog" role="document">
+                    <div class="modal-dialog modal-xl" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h5 class="modal-title" id="createModalLabel">Creación de usuario</h5>
@@ -1032,7 +1276,7 @@
       
                   <!-- Modal editar usuario -->
                   <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
-                    <div class="modal-dialog" role="document">
+                    <div class="modal-dialog modal-xl" role="document">
                       <div class="modal-content">
                         <div class="modal-header">
                           <h5 class="modal-title" id="editModalLabel">Edición del usuario {{ usuario_seleccionado.email }}</h5>
@@ -1086,7 +1330,7 @@
       
                   <!-- Modal eliminar usuario -->
                   <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
-                    <div class="modal-dialog" role="document">
+                    <div class="modal-dialog modal-xl" role="document">
                       <div class="modal-content">
                         <div class="modal-header">
                           <h5 class="modal-title" id="deleteModalLabel">Confirmar eliminación</h5>
@@ -1110,7 +1354,7 @@
           </main>
           <footer class="bg-dark text-white text-center py-3">
             <div class="container">
-              © 2023 Todos los derechos reservados:
+              © 2025 Todos los derechos reservados:
               <a class="text-white text-decoration-none" href="#">docarmoelmejor.com</a>
             </div>
           </footer>

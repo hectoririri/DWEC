@@ -96,11 +96,12 @@ class RetiradaCtrl extends Controller
      */
     public function getUltima()
     {
-        $ultimaRetirada = Retirada::latest('id')->first();
+        // Se incluyen los elementos borrados con SoftDeletes
+        $ultima_retirada = Retirada::withTrashed()->latest('id')->first();
         
-        if ($ultimaRetirada) {
-            $siguienteId = $ultimaRetirada->id + 1;
-            return response()->json(['ultima_retirada' => $ultimaRetirada, 'siguiente_id' => $siguienteId], 200);
+        if ($ultima_retirada) {
+            $siguiente_id = $ultima_retirada->id + 1;
+            return response()->json(['ultima_retirada' => $ultima_retirada, 'siguiente_id' => $siguiente_id], 200);
         }
         
         return response()->json(['ultima_retirada' => null, 'siguiente_id' => 1], 200);
