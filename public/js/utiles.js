@@ -72,10 +72,10 @@ let app = new Vue({
 
         logeado: false, // Booleano que indica si se ha logeado o no
         pantalla: "", //Pantalla actual
-
-        isEditing: false,
+        mensajeAlerta: "",
 
         fecha_entrada_vehiculo: "",
+        fecha_entrada_vehiculo_crear: "",
 
         // Pagination and sorting
         pageSize: 10,
@@ -271,6 +271,9 @@ let app = new Vue({
         }
     },
     methods: {
+        limpiarMensaje(){
+            this.mensajeAlerta = "";
+        },
         cargarTarifa(){
             fetch(this.url+'tarifa/ultima', {
                 method: 'GET',
@@ -313,16 +316,16 @@ let app = new Vue({
         calcularPrecioHoras(){
             // Calculate hours between dates
                 // Parse dates ensuring proper format
-                const fechaEntrada = new Date(this.fecha_entrada.replace(' ', 'T'));
-                const fechaActual = new Date(this.formLiquidacion.fecha.replace(' ', 'T'));
-                if (fechaEntrada > fechaActual) {
+                const fechaEntrada = new Date(this.fecha_entrada_vehiculo.replace(' ', 'T'));
+                const fechaSalida = new Date(this.formLiquidacion.fecha.replace(' ', 'T'));
+                if (fechaSalida < fechaEntrada) {
                     this.formLiquidacion.fecha = new Date(Date.now() + 3600000).toISOString().slice(0,16)
                     console.error("La fecha de liquidación debe ser posterior a la fecha de entrada");
                     return;
                 }
                 
                 // Calculate time difference in milliseconds
-                const diffTime = Math.abs(fechaActual.getTime() - fechaEntrada.getTime());
+                const diffTime = Math.abs(fechaSalida.getTime() - fechaEntrada.getTime());
                 
                 // Convert to hours and round up
                 const diffHours = Math.ceil(diffTime / (1000 * 60 * 60));
@@ -347,14 +350,15 @@ let app = new Vue({
         },
         // Nuevo método para calcular precios en edición
         calcularPrecioHorasEdicion(){
-            const fechaEntrada = new Date(this.fecha_entrada.replace(' ', 'T'));
+            const fechaEntrada = new Date(this.fecha_entrada_vehiculo.replace(' ', 'T'));
             const fechaActual = new Date(this.liquidacion_seleccionada.fecha.replace(' ', 'T'));
             
-            if (fechaActual > fechaEntrada) {
+            if (fechaEntrada > fechaActual) {
                 this.liquidacion_seleccionada.fecha = new Date(Date.now() + 3600000).toISOString().slice(0,16);
-                // console.error("La fecha de liquidación debe ser posterior a la fecha de entrada");
+                console.error("La fecha de liquidación debe ser posterior a la fecha de entrada");
                 return;
             }
+
             
             const diffTime = Math.abs(fechaActual.getTime() - fechaEntrada.getTime());
             const diffHours = Math.ceil(diffTime / (1000 * 60 * 60));
@@ -448,10 +452,9 @@ let app = new Vue({
                 .then(data => {
                     this.fecha_entrada = data.fecha_entrada;
                     this.fecha_entrada_vehiculo = data.fecha_entrada;
-                    console.log(data.fecha_salida);
-                    
                     this.precio_encontrado = this.precios.find(precio => precio.tipo === data.tipo_vehiculo);
                     this.calcularPrecioHorasEdicion();
+                    this.calcularPrecioHoras();
                 });
 
                 Vue.nextTick(() => {
@@ -470,6 +473,7 @@ let app = new Vue({
         abrirModalLiquidacion() {
             $('#liquidacionCrearModal').modal('hide'); 
             this.obtenerRetiradasDisponibles();
+            this.fecha_entrada_vehiculo = "";
             // Reseteamos el formulario
             this.formLiquidacion = {
                 id_retirada: '',
@@ -486,6 +490,7 @@ let app = new Vue({
                 total: '',
                 opciones_pago: '',
             };
+            this.rellenarFormCreacionVehiculo();
             $('#liquidacionCrearModal').modal('show');  // Show the modal
         },
 
@@ -529,6 +534,7 @@ let app = new Vue({
                 this.obtenerLiquidaciones();
                 $('#liquidacionCrearModal').modal('hide');
                 this.nuevoLog('Creación retirada', 'Se ha creado la retirada'+this.formLiquidacion.id);
+                this.mensajeAlerta = "Retirada creada correctamente";
                 this.formLiquidacion = {
                     id_retirada: '',
                     nombre: '',
@@ -572,6 +578,7 @@ let app = new Vue({
             .then(data => {
                 this.obtenerLiquidaciones();
                 $('#liquidacionEditarModal').modal('hide');
+                this.mensajeAlerta = "Retirada modificada correctamente"
                 this.nuevoLog('Modificación retirada', 'El administrador ha modificado la retirada '+this.liquidacion_seleccionada.id)
                 this.liquidacion_seleccionada = {};
                 console.log('liquidacion actualizado correctamente');
@@ -671,6 +678,7 @@ let app = new Vue({
             .then(data => {
                 this.obtenerRetiradas();
                 $('#retiradaCrearModal').modal('hide');
+                this.mensajeAlerta = "Vehículo creado correctamente";
                 this.nuevoLog('Creación vehículo', 'Se ha creado el vehículo'+this.formRetirada.id);
                 this.formRetirada = {
                     id: '',
@@ -732,6 +740,7 @@ let app = new Vue({
             .then(data => {
                 this.obtenerRetiradas();
                 $('#retiradaEditarModal').modal('hide');
+                this.mensajeAlerta = "Vehículo modificado correctamente"
                 this.nuevoLog('Modificación vehículo', 'El administrador ha modificado el vehículo '+this.retirada_seleccionada.id)
                 this.retirada_seleccionada = {};
                 console.log('Retirada actualizado correctamente');
@@ -854,6 +863,7 @@ let app = new Vue({
             .then(data => {
                 this.obtenerUsuarios();
                 $('#editModal').modal('hide');
+                this.mensajeAlerta = "Usuario modificado correctamente";
                 this.nuevoLog('Modificación usuario', 'El administrador ha modificado al usuario '+this.usuario_seleccionado.email)
                 this.usuario_seleccionado = {};
                 console.log('Usuario actualizado correctamente');
@@ -890,6 +900,7 @@ let app = new Vue({
                 this.email = "";
                 this.rol = "";
                 this.contrasena = "";
+                this.mensajeAlerta = "Usuario creado correctamente"
                 this.nuevoLog('Creacion usuario', 'El administrador ha creado un nuevo usuario ')
                 console.log('Usuario creado correctamente' + data);
             })
