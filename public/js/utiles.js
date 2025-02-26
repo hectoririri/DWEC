@@ -497,7 +497,7 @@ let app = new Vue({
             .then(response => {
                 if (response.ok) {
                     this.obtenerLiquidaciones();
-                    this.nuevoLog('Eliminación retirada', 'El administrador ha eliminado la liquidación '+this.liquidacion_seleccionada.id)
+                    this.nuevoLog('Eliminación retirada', 'El administrador ha eliminado la retirada '+this.liquidacion_seleccionada.id)
                     this.liquidacion_seleccionada = {};
                     $('#liquidacionEliminarModal').modal('hide');
                 }
@@ -518,7 +518,6 @@ let app = new Vue({
             .then(response => {
                 if (response.ok) {
                     return response.json();
-                    this.nuevoLog('Creación retirada', 'El administrador ha creado la retirada '+this.liquidacion_seleccionada.id)
 
                 } else {
                     return response.json().then(data => {
@@ -529,7 +528,7 @@ let app = new Vue({
             .then(data => {
                 this.obtenerLiquidaciones();
                 $('#liquidacionCrearModal').modal('hide');
-                this.nuevoLog('Creación liquidacion', 'Se ha creado la liquidacion'+this.formLiquidacion.id);
+                this.nuevoLog('Creación retirada', 'Se ha creado la retirada'+this.formLiquidacion.id);
                 this.formLiquidacion = {
                     id_retirada: '',
                     nombre: '',
@@ -573,7 +572,7 @@ let app = new Vue({
             .then(data => {
                 this.obtenerLiquidaciones();
                 $('#liquidacionEditarModal').modal('hide');
-                this.nuevoLog('Modificación liquidacion', 'El administrador ha modificado la liquidacion '+this.liquidacion_seleccionada.id)
+                this.nuevoLog('Modificación retirada', 'El administrador ha modificado la retirada '+this.liquidacion_seleccionada.id)
                 this.liquidacion_seleccionada = {};
                 console.log('liquidacion actualizado correctamente');
             })
@@ -672,7 +671,7 @@ let app = new Vue({
             .then(data => {
                 this.obtenerRetiradas();
                 $('#retiradaCrearModal').modal('hide');
-                this.nuevoLog('Creación retirada', 'Se ha creado la retirada'+this.formRetirada.id);
+                this.nuevoLog('Creación vehículo', 'Se ha creado el vehículo'+this.formRetirada.id);
                 this.formRetirada = {
                     id: '',
                     fecha_entrada: '',
@@ -702,7 +701,7 @@ let app = new Vue({
             .then(response => {
                 if (response.ok) {
                     this.obtenerRetiradas();
-                    this.nuevoLog('Eliminación retirada', 'El administrador ha eliminado la retirada '+this.retirada_seleccionada.id)
+                    this.nuevoLog('Eliminación vehículo', 'El administrador ha eliminado el vehículo '+this.retirada_seleccionada.id)
                     this.retirada_seleccionada = {};
                     $('#retiradaEliminarModal').modal('hide');
                 }
@@ -733,7 +732,7 @@ let app = new Vue({
             .then(data => {
                 this.obtenerRetiradas();
                 $('#retiradaEditarModal').modal('hide');
-                this.nuevoLog('Modificación retirada', 'El administrador ha modificado la retirada '+this.retirada_seleccionada.id)
+                this.nuevoLog('Modificación vehículo', 'El administrador ha modificado el vehículo '+this.retirada_seleccionada.id)
                 this.retirada_seleccionada = {};
                 console.log('Retirada actualizado correctamente');
             })
