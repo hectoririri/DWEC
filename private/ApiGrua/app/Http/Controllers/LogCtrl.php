@@ -36,7 +36,6 @@ class LogCtrl extends Controller
         $validatedData = $request->validate([
             'usuario_id' => 'nullable|integer',
             'descripcion' => 'nullable|string',
-            'fecha' => 'nullable|date',
             'accion' => 'nullable|string',
         ]);
 

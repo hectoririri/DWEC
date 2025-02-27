@@ -121,7 +121,7 @@
           </nav>
 
           <!-- Alert message container -->
-          <div v-if="mensajeAlerta" class="alert alert-success fade show text-center" role="alert"></div>
+          <div v-if="mensajeAlerta" class="alert alert-success fade show text-center" role="alert">
             {{ mensajeAlerta }}
             <button type="button" class="close" @click="mensajeAlerta = ''" aria-label="Close">
               <span aria-hidden="true">&times;</span>
@@ -1183,7 +1183,7 @@
                             <td class="text-center">
                               <span class="badge" :class="{
                                 'bg-danger': usuario.rol === 'administrador',
-                                'bg-secondary': usuario.rol === 'operario'
+                                'bg-warning': usuario.rol === 'operario'
                               }">
                                 {{ usuario.rol === 'administrador' ? 'Administrador' : 'Operario' }}
                               </span>
