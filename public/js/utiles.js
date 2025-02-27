@@ -12,7 +12,6 @@ let app = new Vue({
             rol: ''
         }, //Json del usuario seleccionado al editar, eliminar...
         usuarios: [], // Lista usuarios
-
         // Retirada = Vehiculos
         retiradas: [], // Lista de retiradas
         retirada_seleccionada: {}, // Json de la retirada seleccionada
@@ -74,8 +73,8 @@ let app = new Vue({
         pantalla: "", //Pantalla actual
         mensajeAlerta: "",
 
-        fecha_entrada_vehiculo: "",
-        fecha_entrada_vehiculo_crear: "",
+        fecha_entrada_vehiculo: null,
+        fecha_entrada_vehiculo_crear: null,
 
         // Pagination and sorting
         pageSize: 10,
@@ -129,6 +128,16 @@ let app = new Vue({
     },
     mounted() {
         this.cargarTarifa();
+    },
+    created() {
+        // Check if there's an active session when the app loads
+        const isLogged = localStorage.getItem('isLogged');
+        const userData = localStorage.getItem('user');
+        
+        if (isLogged === 'true' && userData) {
+          this.usuario = JSON.parse(userData);
+          this.logeado = true;
+        }
     },
     computed: {
         // Filter retiradas based on search query
@@ -271,8 +280,30 @@ let app = new Vue({
         }
     },
     methods: {
-        limpiarMensaje(){
-            this.mensajeAlerta = "";
+        cerrarSesion() {
+            localStorage.removeItem('user');
+            localStorage.removeItem('isLogged');
+            this.logeado = false;
+            this.usuario = {};
+        },
+        formatDateForInput(dateString) {
+            if (!dateString) return '';
+            try {
+                const date = new Date(dateString);
+                if (isNaN(date.getTime())) return '';
+                
+                // Format date as YYYY-MM-DDTHH:mm
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                const hours = String(date.getHours()).padStart(2, '0');
+                const minutes = String(date.getMinutes()).padStart(2, '0');
+                
+                return `${year}-${month}-${day}T${hours}:${minutes}`;
+            } catch (e) {
+                console.error('Error formatting date:', e);
+                return '';
+        }
         },
         cargarTarifa(){
             fetch(this.url+'tarifa/ultima', {
@@ -290,63 +321,66 @@ let app = new Vue({
         // Cuando se selecciona un vehiculo en el formulario de retirada crear
         rellenarFormCreacionVehiculo() {
             if (!this.formLiquidacion.id_retirada) return;
-            
+
             fetch(this.url + 'retiradas/' + this.formLiquidacion.id_retirada, {
                 method: 'GET',
             })
             .then(response => response.json())
-            .then(data => {
-                console.log("ID seleccionado:", this.formLiquidacion.id_retirada);
-                console.log("Vehiculo seleccionado:", data.tipo_vehiculo);
-                this.fecha_entrada_vehiculo = data.fecha_entrada;
-                // Buscamos el precio correspondiente en la lista de precios
+            .then(data => {                
+                // Ensure proper date formatting
+                const formattedDate = this.formatDateForInput(data.fecha_entrada);
+                this.fecha_entrada_vehiculo = formattedDate;
+                this.fecha_entrada = formattedDate;
+                
+                // Set default exit date to current time + 1 hour if not set
+                if (!this.formLiquidacion.fecha) {
+                    this.formLiquidacion.fecha = new Date(Date.now() + 3600000).toISOString().slice(0,16);
+                }
+                
                 this.precio_encontrado = this.precios.find(precio => precio.tipo === data.tipo_vehiculo);
-                this.fecha_entrada = data.fecha_entrada;
-
-                // Calculamos el precio según
-                this.calcularPrecioHoras();
-
-                // Asignamos el agente al formulario de retirada
                 this.formLiquidacion.agente = data.agente;
+                
+                // Calculate prices immediately after loading vehicle data
+                this.calcularPrecioHoras();
             })
             .catch(error => {
                 console.error("Error al obtener los datos del vehiculo:", error);
             });
         },
         calcularPrecioHoras(){
-            // Calculate hours between dates
-                // Parse dates ensuring proper format
-                const fechaEntrada = new Date(this.fecha_entrada_vehiculo.replace(' ', 'T'));
-                const fechaSalida = new Date(this.formLiquidacion.fecha.replace(' ', 'T'));
-                if (fechaSalida < fechaEntrada) {
-                    this.formLiquidacion.fecha = new Date(Date.now() + 3600000).toISOString().slice(0,16)
-                    console.error("La fecha de liquidación debe ser posterior a la fecha de entrada");
-                    return;
-                }
-                
-                // Calculate time difference in milliseconds
-                const diffTime = Math.abs(fechaSalida.getTime() - fechaEntrada.getTime());
-                
-                // Convert to hours and round up
-                const diffHours = Math.ceil(diffTime / (1000 * 60 * 60));
-                console.log("Horas transcurridas: ", diffHours);
+            if (!this.fecha_entrada_vehiculo || !this.formLiquidacion.fecha) return;
 
-                // Calculate deposit amount
-                if (diffHours <= this.tarifa.horas_gratis) {
-                    this.formLiquidacion.importe_deposito = 0;
-                } else {
-                    this.formLiquidacion.importe_deposito = diffHours * this.tarifa.costo_por_hora;
-                }
-                
-                if (this.precio_encontrado.precio) {
-                    this.formLiquidacion.importe_retirada = this.precio_encontrado.precio;
-                    console.log("Precio encontrado:", this.precio_encontrado.precio);
-                } else {
-                    console.log("Tipo de vehículo no encontrado en la lista de precios");
-                    this.formLiquidacion.importe_retirada = 0;
-                }
-                // Asignamos el total al formulariom de retirada
-                this.formLiquidacion.total = this.formLiquidacion.importe_retirada + this.formLiquidacion.importe_deposito;
+            const fechaEntrada = new Date(this.fecha_entrada_vehiculo);
+            const fechaSalida = new Date(this.formLiquidacion.fecha);
+            if (fechaSalida < fechaEntrada) {
+                this.formLiquidacion.fecha = new Date(Date.now() + 3600000).toISOString().slice(0,16)
+                console.error("La fecha de liquidación debe ser posterior a la fecha de entrada");
+                return;
+            }
+            
+            // Calculate time difference in milliseconds
+            const diffTime = Math.abs(fechaSalida.getTime() - fechaEntrada.getTime());
+            
+            // Convert to hours and round up
+            const diffHours = Math.ceil(diffTime / (1000 * 60 * 60));
+            console.log("Horas transcurridas: ", diffHours);
+
+            // Calculate deposit amount
+            if (diffHours <= this.tarifa.horas_gratis) {
+                this.formLiquidacion.importe_deposito = 0;
+            } else {
+                this.formLiquidacion.importe_deposito = diffHours * this.tarifa.costo_por_hora;
+            }
+            
+            if (this.precio_encontrado.precio) {
+                this.formLiquidacion.importe_retirada = this.precio_encontrado.precio;
+                console.log("Precio encontrado:", this.precio_encontrado.precio);
+            } else {
+                console.log("Tipo de vehículo no encontrado en la lista de precios");
+                this.formLiquidacion.importe_retirada = 0;
+            }
+            // Asignamos el total al formulariom de retirada
+            this.formLiquidacion.total = this.formLiquidacion.importe_retirada + this.formLiquidacion.importe_deposito;
         },
         // Nuevo método para calcular precios en edición
         calcularPrecioHorasEdicion(){
@@ -463,7 +497,6 @@ let app = new Vue({
             });
         },
         abrirModalLiquidacionEspecifico(id) {
-            console.log(id);
             this.abrirModalLiquidacion();
             this.formLiquidacion.id_retirada = id;
             this.rellenarFormCreacionVehiculo();
@@ -473,7 +506,8 @@ let app = new Vue({
         abrirModalLiquidacion() {
             $('#liquidacionCrearModal').modal('hide'); 
             this.obtenerRetiradasDisponibles();
-            this.fecha_entrada_vehiculo = "";
+            this.fecha_entrada_vehiculo = null;
+            this.fecha_entrada = null;
             // Reseteamos el formulario
             this.formLiquidacion = {
                 id_retirada: '',
@@ -632,6 +666,22 @@ let app = new Vue({
 
         abrirModalRetirada() {
             $('#retiradaCrearModal').modal('hide');
+            this.formRetirada = {
+                id: '',
+                fecha_entrada: new Date(Date.now() + 3600000).toISOString().slice(0,16),
+                fecha_salida: null,
+                lugar: '',
+                direccion: '',
+                agente: '',
+                matricula: '',
+                marca: '',
+                modelo: '',
+                color: '',
+                motivo: '',
+                tipo_vehiculo: '',
+                grua: '',
+                estado: 'En depósito'
+            };
             this.getUltimoId();
             $('#retiradaCrearModal').modal('show');
         },
@@ -949,6 +999,9 @@ let app = new Vue({
                         this.nuevoLog("Login", "El usuario ha iniciado sesión");
                         this.email = "";
                         this.contrasena = "";
+                        localStorage.setItem('user', JSON.stringify(this.usuario));
+                        localStorage.setItem('isLogged', 'true');
+                        this.logeado = true;
                     } else {
                         this.logeado = false;
                         console.log("Email o contraseña incorrectos");

@@ -84,9 +84,13 @@
                   <i class="fas fa-truck-pickup text-white fa-2x mr-3"></i>
                   <h1 class="text-white mb-0">Panel Administración Grua Municipal</h1>
                 </div>
+                <!-- Botón cerrar sesión + nombre del usuario -->
                 <div class="d-flex align-items-center">
                   <i class="fas fa-user-circle text-white fa-lg mr-2"></i>
                   <span class="text-white">{{usuario.email}}</span>
+                  <button @click="cerrarSesion" class="btn btn-outline-light ml-3">
+                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                  </button>
                 </div>
               </div>
             </div>
@@ -117,7 +121,7 @@
           </nav>
 
           <!-- Alert message container -->
-          <div v-if="mensajeAlerta" class="alert alert-success alert-dismissible fade show text-center" role="alert">
+          <div v-if="mensajeAlerta" class="alert alert-success fade show text-center" role="alert"></div>
             {{ mensajeAlerta }}
             <button type="button" class="close" @click="mensajeAlerta = ''" aria-label="Close">
               <span aria-hidden="true">&times;</span>
@@ -168,20 +172,20 @@
                       <table class="table table-striped table-bordered shadow-sm text-center">
                         <thead class="table-dark">
                           <tr>
-                            <th scope="col" class="align-middle text-center" @click="sortByLiquidaciones('id')">ID</th>
-                            <th scope="col" class="align-middle text-center" @click="sortByLiquidaciones('id_retirada')">ID Vehículo</th>
-                            <th scope="col" class="align-middle text-center" @click="sortByLiquidaciones('nombre')">Nombre</th>
-                            <th scope="col" class="align-middle text-center" @click="sortByLiquidaciones('nif')">NIF</th>
-                            <th scope="col" class="align-middle text-center" @click="sortByLiquidaciones('domicilio')">Domicilio</th>
-                            <th scope="col" class="align-middle text-center" @click="sortByLiquidaciones('poblacion')">Población</th>
-                            <th scope="col" class="align-middle text-center" @click="sortByLiquidaciones('provincia')">Provincia</th>
-                            <th scope="col" class="align-middle text-center" @click="sortByLiquidaciones('permiso')">Permiso</th>
-                            <th scope="col" class="align-middle text-center" @click="sortByLiquidaciones('fecha')">Fecha</th>
-                            <th scope="col" class="align-middle text-center" @click="sortByLiquidaciones('agente')">Agente</th>
-                            <th scope="col" class="align-middle text-center" @click="sortByLiquidaciones('opciones_pago')">Opciones Pago</th>
-                            <th scope="col" class="align-middle text-center" @click="sortByLiquidaciones('importe_retirada')">Importe Retirada</th>
-                            <th scope="col" class="align-middle text-center" @click="sortByLiquidaciones('importe_deposito')">Importe Deposito</th>
-                            <th scope="col" class="align-middle text-center" @click="sortByLiquidaciones('total')">Total</th>
+                            <th scope="col" class="align-middle text-center" @click="sortByLiquidaciones('id')">ID <span v-if="currentSortLiquidaciones === 'id'">{{ currentSortDirLiquidaciones === 'asc' ? '▲' : '▼' }}</span></th>
+                            <th scope="col" class="align-middle text-center" @click="sortByLiquidaciones('id_retirada')">ID Vehículo <span v-if="currentSortLiquidaciones === 'id_retirada'">{{ currentSortDirLiquidaciones === 'asc' ? '▲' : '▼' }}</span></th>
+                            <th scope="col" class="align-middle text-center" @click="sortByLiquidaciones('nombre')">Nombre <span v-if="currentSortLiquidaciones === 'nombre'">{{ currentSortDirLiquidaciones === 'asc' ? '▲' : '▼' }}</span></th>
+                            <th scope="col" class="align-middle text-center" @click="sortByLiquidaciones('nif')">NIF <span v-if="currentSortLiquidaciones === 'nif'">{{ currentSortDirLiquidaciones === 'asc' ? '▲' : '▼' }}</span></th>
+                            <th scope="col" class="align-middle text-center" @click="sortByLiquidaciones('domicilio')">Domicilio <span v-if="currentSortLiquidaciones === 'domicilio'">{{ currentSortDirLiquidaciones === 'asc' ? '▲' : '▼' }}</span></th>
+                            <th scope="col" class="align-middle text-center" @click="sortByLiquidaciones('poblacion')">Población <span v-if="currentSortLiquidaciones === 'poblacion'">{{ currentSortDirLiquidaciones === 'asc' ? '▲' : '▼' }}</span></th>
+                            <th scope="col" class="align-middle text-center" @click="sortByLiquidaciones('provincia')">Provincia <span v-if="currentSortLiquidaciones === 'provincia'">{{ currentSortDirLiquidaciones === 'asc' ? '▲' : '▼' }}</span></th>
+                            <th scope="col" class="align-middle text-center" @click="sortByLiquidaciones('permiso')">Permiso <span v-if="currentSortLiquidaciones === 'permiso'">{{ currentSortDirLiquidaciones === 'asc' ? '▲' : '▼' }}</span></th>
+                            <th scope="col" class="align-middle text-center" @click="sortByLiquidaciones('fecha')">Fecha <span v-if="currentSortLiquidaciones === 'fecha'">{{ currentSortDirLiquidaciones === 'asc' ? '▲' : '▼' }}</span></th>
+                            <th scope="col" class="align-middle text-center" @click="sortByLiquidaciones('agente')">Agente <span v-if="currentSortLiquidaciones === 'agente'">{{ currentSortDirLiquidaciones === 'asc' ? '▲' : '▼' }}</span></th>
+                            <th scope="col" class="align-middle text-center" @click="sortByLiquidaciones('opciones_pago')">Opciones Pago <span v-if="currentSortLiquidaciones === 'opciones_pago'">{{ currentSortDirLiquidaciones === 'asc' ? '▲' : '▼' }}</span></th>
+                            <th scope="col" class="align-middle text-center" @click="sortByLiquidaciones('importe_retirada')">Importe Retirada <span v-if="currentSortLiquidaciones === 'importe_retirada'">{{ currentSortDirLiquidaciones === 'asc' ? '▲' : '▼' }}</span></th>
+                            <th scope="col" class="align-middle text-center" @click="sortByLiquidaciones('importe_deposito')">Importe Deposito <span v-if="currentSortLiquidaciones === 'importe_deposito'">{{ currentSortDirLiquidaciones === 'asc' ? '▲' : '▼' }}</span></th>
+                            <th scope="col" class="align-middle text-center" @click="sortByLiquidaciones('total')">Total <span v-if="currentSortLiquidaciones === 'total'">{{ currentSortDirLiquidaciones === 'asc' ? '▲' : '▼' }}</span></th>
                             <th scope="col" class="align-middle text-center" colspan="3">Acciones</th>
                           </tr>
                         </thead>
@@ -565,7 +569,7 @@
                           </div>
                         </div>
                         <!-- Table -->
-                        <table class="table table-bordered shadow-sm">
+                        <table class="table table-bordered table-striped shadow-sm">
                           <thead class="table-dark">
                             <tr>
                               <th scope="col" class="align-middle text-center" @click="sortByRetiradas('id')">
@@ -657,9 +661,7 @@
                           </thead>
                           <tbody>
                             <tr v-for="retirada in paginatedAndFilteredRetiradas" 
-                                class="align-middle"
-                                :class="{'table-primary': retirada.estado === 'En depósito', 
-                                        'table-success': retirada.estado === 'Retirado'}">
+                                class="align-middle">
                               <td class="text-center">{{ retirada.id }}</td>
                               <td class="text-center">{{ retirada.fecha_entrada }}</td>
                               <td class="text-center">{{ retirada.fecha_salida }}</td>
@@ -673,7 +675,8 @@
                               <td class="text-center">{{ retirada.motivo }}</td>
                               <td class="text-center">{{ retirada.tipo_vehiculo }}</td>
                               <td class="text-center">{{ retirada.grua }}</td>
-                              <td class="text-center">{{ retirada.estado }}</td>
+                              <td class="text-center" :class="{'table-primary': retirada.estado === 'En depósito', 
+                              'table-success': retirada.estado === 'Retirado'}">{{ retirada.estado }}</td>
                               <td class="text-center">
                                 <button @click="formularioEditarRetirada(retirada.id)" 
                                         class="btn btn-primary btn-sm" 
@@ -864,8 +867,7 @@
                                   </div>
                                   <div class="form-group mb-2">
                                     <label for="fecha_entrada" class="form-label">Fecha de Entrada:</label>
-                                    <input type="datetime-local" v-model="formRetirada.fecha_entrada = new Date(Date.now() + 3600000).toISOString().slice(0,16)" 
-                                          class="form-control form-control-sm" id="fecha_entrada" required>
+                                    <input type="datetime-local" v-model="formRetirada.fecha_entrada" class="form-control form-control-sm" id="fecha_entrada" required>
                                     <div class="invalid-feedback">La fecha de entrada es requerida</div>
                                   </div>
                                   <div class="form-group mb-2">
@@ -1021,18 +1023,19 @@
                                           <label for="id" class="form-label">ID:</label>
                                           <input type="text" v-model="retirada_seleccionada.id" class="form-control" id="id" required disabled>
                                         </div>
-                                        <div class="form-group mb-3">
-                                          <label for="fecha_entrada" class="form-label">Fecha de Entrada:</label>
+                                        <div class="form-group mb-3" v-if="retirada_seleccionada.fecha_salida == null">
+                                          <label for="fecha_entrada" class="form-label" >Fecha de Entrada:</label>
                                           <input type="datetime-local" v-model="retirada_seleccionada.fecha_entrada" class="form-control" id="fecha_entrada" required>
                                           <div class="invalid-feedback">La fecha de entrada es requerida</div>
                                         </div>
-                                        <div class="form-group mb-3" v-if="retirada_seleccionada.fecha_salida == null">
+                                        <div class="form-group mb-3" v-else>
+                                          <label for="fecha_entrada" class="form-label" >Fecha de Entrada:</label>
+                                          <input type="datetime-local" v-model="retirada_seleccionada.fecha_entrada" class="form-control" id="fecha_entrada" required readonly>
+                                          <div class="invalid-feedback">La fecha de entrada es requerida</div>
+                                        </div>
+                                        <div class="form-group mb-3">
                                           <label for="fecha_salida" class="form-label">Fecha de Salida:</label>
                                           <input type="datetime-local" v-model="retirada_seleccionada.fecha_salida" class="form-control" id="fecha_salida" disabled>
-                                        </div>
-                                        <div class="form-group mb-3" v-else>
-                                          <label for="fecha_salida" class="form-label">Fecha de Salida:</label>
-                                          <input type="datetime-local" v-model="retirada_seleccionada.fecha_salida" class="form-control" id="fecha_salida">
                                         </div>
                                         <div class="form-group mb-3">
                                           <label for="lugar" class="form-label">Lugar:</label>
