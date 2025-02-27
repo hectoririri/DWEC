@@ -37,6 +37,10 @@ CREATE TABLE IF NOT EXISTS `liquidacion` (
 
 -- Volcando datos para la tabla grua_municipal.liquidacion: ~0 rows (aproximadamente)
 DELETE FROM `liquidacion`;
+INSERT INTO `liquidacion` (`id`, `id_retirada`, `nombre`, `nif`, `domicilio`, `poblacion`, `provincia`, `permiso`, `fecha`, `agente`, `importe_retirada`, `importe_deposito`, `total`, `opciones_pago`) VALUES
+	(1, 20250001, 'Juan Pérez García', '12345678A', 'Calle Luna 15', 'Almonte', 'Huelva', 'B-12345', '2025-02-27 16:30:00', 'Agente García Pérez', 100.00, 0.00, 100.00, 'Tarjeta'),
+	(2, 20250002, 'María López Ruiz', '87654321B', 'Avenida Sol 28', 'Almonte', 'Huelva', 'A-54321', '2025-02-28 09:15:00', 'Agente Martínez López', 25.00, 16.00, 41.00, 'Metálico'),
+	(3, 20250003, 'Carlos Sánchez Mora', '11223344C', 'Plaza España 3', 'Almonte', 'Huelva', 'B-98765', '2025-02-28 10:00:00', 'Agente Ruiz Santos', 130.00, 0.00, 130.00, 'Bizum');
 
 -- Volcando estructura para tabla grua_municipal.logs
 CREATE TABLE IF NOT EXISTS `logs` (
@@ -52,10 +56,17 @@ CREATE TABLE IF NOT EXISTS `logs` (
   CONSTRAINT `log_usuario_id_fk` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
--- Volcando datos para la tabla grua_municipal.logs: ~0 rows (aproximadamente)
+-- Volcando datos para la tabla grua_municipal.logs: ~1 rows (aproximadamente)
 DELETE FROM `logs`;
 INSERT INTO `logs` (`id`, `usuario_id`, `accion`, `descripcion`, `fecha`, `created_at`, `updated_at`) VALUES
-	(1, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-27 04:10:52', '2025-02-27 03:10:52', '2025-02-27 03:10:52');
+	(1, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-27 04:10:52', '2025-02-27 03:10:52', '2025-02-27 03:10:52'),
+	(2, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-27 04:35:55', '2025-02-27 03:35:55', '2025-02-27 03:35:55'),
+	(3, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-27 04:36:22', '2025-02-27 03:36:22', '2025-02-27 03:36:22'),
+	(4, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-27 04:37:54', '2025-02-27 03:37:54', '2025-02-27 03:37:54'),
+	(5, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-27 04:38:01', '2025-02-27 03:38:01', '2025-02-27 03:38:01'),
+	(6, 1, 'Modificación vehículo', 'El administrador ha modificado el vehículo 20250001', '2025-02-27 04:48:00', '2025-02-27 03:48:00', '2025-02-27 03:48:00'),
+	(7, 1, 'Modificación vehículo', 'El administrador ha modificado el vehículo 20250002', '2025-02-27 04:48:14', '2025-02-27 03:48:14', '2025-02-27 03:48:14'),
+	(8, 1, 'Modificación vehículo', 'El administrador ha modificado el vehículo 20250003', '2025-02-27 04:48:20', '2025-02-27 03:48:20', '2025-02-27 03:48:20');
 
 -- Volcando estructura para tabla grua_municipal.precios
 CREATE TABLE IF NOT EXISTS `precios` (
@@ -95,6 +106,10 @@ CREATE TABLE IF NOT EXISTS `retiradas` (
 
 -- Volcando datos para la tabla grua_municipal.retiradas: ~0 rows (aproximadamente)
 DELETE FROM `retiradas`;
+INSERT INTO `retiradas` (`id`, `fecha_entrada`, `fecha_salida`, `lugar`, `direccion`, `agente`, `matricula`, `marca`, `modelo`, `color`, `motivo`, `tipo_vehiculo`, `grua`, `estado`, `deleted_at`) VALUES
+	(20250001, '2025-02-26 10:00:00', NULL, 'Zona Centro', 'Calle Real 123', 'Agente García Pérez', '1234ABC', 'Volkswagen', 'Golf', 'Negro', 'Estacionamiento prohibido', 'Turismo hasta 12 cv o Remolques hasta 750 kg', 'Grua Norte', 'En depósito', NULL),
+	(20250002, '2025-02-27 11:30:00', '2025-02-28 09:15:00', 'Zona Norte', 'Avenida Principal 45', 'Agente Martínez López', '5678DEF', 'Honda', 'CBR600', 'Rojo', 'Abandono', 'Motocicleta, aperos, motocarros y similares', 'Grua Norte', 'Retirado', NULL),
+	(20250003, '2025-02-21 15:45:00', NULL, 'Zona Sur', 'Plaza Mayor 7', 'Agente Ruiz Santos', '9012GHI', 'Mercedes', 'Clase C', 'Blanco', 'Doble fila', 'Turismos más de 12 cv o Remolques más de 750 kg', 'Grua Ajandemol', 'En depósito', NULL);
 
 -- Volcando estructura para tabla grua_municipal.tarifas
 CREATE TABLE IF NOT EXISTS `tarifas` (
