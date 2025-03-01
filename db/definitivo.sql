@@ -14,60 +14,6 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
--- Volcando estructura para tabla grua_municipal.liquidacion
-CREATE TABLE IF NOT EXISTS `liquidacion` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `id_retirada` bigint(20) NOT NULL,
-  `nombre` varchar(500) DEFAULT NULL,
-  `nif` varchar(500) DEFAULT NULL,
-  `domicilio` varchar(500) DEFAULT NULL,
-  `poblacion` varchar(500) DEFAULT NULL,
-  `provincia` varchar(500) DEFAULT NULL,
-  `permiso` varchar(500) DEFAULT NULL,
-  `fecha` datetime DEFAULT NULL,
-  `agente` varchar(500) DEFAULT NULL,
-  `importe_retirada` decimal(20,2) DEFAULT NULL,
-  `importe_deposito` decimal(20,2) DEFAULT NULL,
-  `total` decimal(20,2) DEFAULT NULL,
-  `opciones_pago` varchar(50) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `FK_liquidacion_retiradas` (`id_retirada`),
-  CONSTRAINT `FK_liquidacion_retiradas` FOREIGN KEY (`id_retirada`) REFERENCES `retiradas` (`id`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
-
--- Volcando datos para la tabla grua_municipal.liquidacion: ~0 rows (aproximadamente)
-DELETE FROM `liquidacion`;
-INSERT INTO `liquidacion` (`id`, `id_retirada`, `nombre`, `nif`, `domicilio`, `poblacion`, `provincia`, `permiso`, `fecha`, `agente`, `importe_retirada`, `importe_deposito`, `total`, `opciones_pago`) VALUES
-	(1, 20250001, 'Juan Pérez García', '12345678A', 'Calle Luna 15', 'Almonte', 'Huelva', 'B-12345', '2025-02-27 16:30:00', 'Agente García Pérez', 100.00, 0.00, 100.00, 'Tarjeta'),
-	(2, 20250002, 'María López Ruiz', '87654321B', 'Avenida Sol 28', 'Almonte', 'Huelva', 'A-54321', '2025-02-28 09:15:00', 'Agente Martínez López', 25.00, 16.00, 41.00, 'Metálico'),
-	(3, 20250003, 'Carlos Sánchez Mora', '11223344C', 'Plaza España 3', 'Almonte', 'Huelva', 'B-98765', '2025-02-28 10:00:00', 'Agente Ruiz Santos', 130.00, 0.00, 130.00, 'Bizum');
-
--- Volcando estructura para tabla grua_municipal.logs
-CREATE TABLE IF NOT EXISTS `logs` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `usuario_id` bigint(20) NOT NULL,
-  `accion` varchar(500) DEFAULT NULL,
-  `descripcion` varchar(500) DEFAULT NULL,
-  `fecha` datetime DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `log_usuario_id_fk` (`usuario_id`),
-  CONSTRAINT `log_usuario_id_fk` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
-
--- Volcando datos para la tabla grua_municipal.logs: ~1 rows (aproximadamente)
-DELETE FROM `logs`;
-INSERT INTO `logs` (`id`, `usuario_id`, `accion`, `descripcion`, `fecha`, `created_at`, `updated_at`) VALUES
-	(1, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-27 04:10:52', '2025-02-27 03:10:52', '2025-02-27 03:10:52'),
-	(2, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-27 04:35:55', '2025-02-27 03:35:55', '2025-02-27 03:35:55'),
-	(3, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-27 04:36:22', '2025-02-27 03:36:22', '2025-02-27 03:36:22'),
-	(4, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-27 04:37:54', '2025-02-27 03:37:54', '2025-02-27 03:37:54'),
-	(5, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-27 04:38:01', '2025-02-27 03:38:01', '2025-02-27 03:38:01'),
-	(6, 1, 'Modificación vehículo', 'El administrador ha modificado el vehículo 20250001', '2025-02-27 04:48:00', '2025-02-27 03:48:00', '2025-02-27 03:48:00'),
-	(7, 1, 'Modificación vehículo', 'El administrador ha modificado el vehículo 20250002', '2025-02-27 04:48:14', '2025-02-27 03:48:14', '2025-02-27 03:48:14'),
-	(8, 1, 'Modificación vehículo', 'El administrador ha modificado el vehículo 20250003', '2025-02-27 04:48:20', '2025-02-27 03:48:20', '2025-02-27 03:48:20');
-
 -- Volcando estructura para tabla grua_municipal.precios
 CREATE TABLE IF NOT EXISTS `precios` (
   `tipo_vehiculo` varchar(200) NOT NULL,
@@ -124,6 +70,7 @@ DELETE FROM `tarifas`;
 INSERT INTO `tarifas` (`id`, `horas_gratis`, `costo_por_hora`) VALUES
 	(1, 24, 4);
 
+
 -- Volcando estructura para tabla grua_municipal.usuarios
 CREATE TABLE IF NOT EXISTS `usuarios` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
@@ -141,6 +88,63 @@ INSERT INTO `usuarios` (`id`, `email`, `password`, `rol`, `deleted_at`) VALUES
 	(3, 'operario1@grua.com', 'Op123456', 'operario', NULL),
 	(4, 'supervisor@grua.com', 'Sup123456', 'administrador', NULL),
 	(12, 'operario2@grua.com', 'Op123456', 'operario', NULL);
+
+-- Volcando estructura para tabla grua_municipal.logs
+CREATE TABLE IF NOT EXISTS `logs` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `usuario_id` bigint(20) NOT NULL,
+  `accion` varchar(500) DEFAULT NULL,
+  `descripcion` varchar(500) DEFAULT NULL,
+  `fecha` datetime DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `log_usuario_id_fk` (`usuario_id`),
+  CONSTRAINT `log_usuario_id_fk` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+-- Volcando datos para la tabla grua_municipal.logs: ~1 rows (aproximadamente)
+DELETE FROM `logs`;
+INSERT INTO `logs` (`id`, `usuario_id`, `accion`, `descripcion`, `fecha`, `created_at`, `updated_at`) VALUES
+	(1, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-27 04:10:52', '2025-02-27 03:10:52', '2025-02-27 03:10:52'),
+	(2, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-27 04:35:55', '2025-02-27 03:35:55', '2025-02-27 03:35:55'),
+	(3, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-27 04:36:22', '2025-02-27 03:36:22', '2025-02-27 03:36:22'),
+	(4, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-27 04:37:54', '2025-02-27 03:37:54', '2025-02-27 03:37:54'),
+	(5, 1, 'Login', 'El usuario ha iniciado sesión', '2025-02-27 04:38:01', '2025-02-27 03:38:01', '2025-02-27 03:38:01'),
+	(6, 1, 'Modificación vehículo', 'El administrador ha modificado el vehículo 20250001', '2025-02-27 04:48:00', '2025-02-27 03:48:00', '2025-02-27 03:48:00'),
+	(7, 1, 'Modificación vehículo', 'El administrador ha modificado el vehículo 20250002', '2025-02-27 04:48:14', '2025-02-27 03:48:14', '2025-02-27 03:48:14'),
+	(8, 1, 'Modificación vehículo', 'El administrador ha modificado el vehículo 20250003', '2025-02-27 04:48:20', '2025-02-27 03:48:20', '2025-02-27 03:48:20');
+
+-- Volcando estructura para tabla grua_municipal.liquidacion
+CREATE TABLE IF NOT EXISTS `liquidacion` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_retirada` bigint(20) NOT NULL,
+  `nombre` varchar(500) DEFAULT NULL,
+  `nif` varchar(500) DEFAULT NULL,
+  `domicilio` varchar(500) DEFAULT NULL,
+  `poblacion` varchar(500) DEFAULT NULL,
+  `provincia` varchar(500) DEFAULT NULL,
+  `permiso` varchar(500) DEFAULT NULL,
+  `fecha` datetime DEFAULT NULL,
+  `agente` varchar(500) DEFAULT NULL,
+  `importe_retirada` decimal(20,2) DEFAULT NULL,
+  `importe_deposito` decimal(20,2) DEFAULT NULL,
+  `total` decimal(20,2) DEFAULT NULL,
+  `opciones_pago` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK_liquidacion_retiradas` (`id_retirada`),
+  CONSTRAINT `FK_liquidacion_retiradas` FOREIGN KEY (`id_retirada`) REFERENCES `retiradas` (`id`) ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+-- Volcando datos para la tabla grua_municipal.liquidacion: ~0 rows (aproximadamente)
+DELETE FROM `liquidacion`;
+INSERT INTO `liquidacion` (`id`, `id_retirada`, `nombre`, `nif`, `domicilio`, `poblacion`, `provincia`, `permiso`, `fecha`, `agente`, `importe_retirada`, `importe_deposito`, `total`, `opciones_pago`) VALUES
+	(1, 20250001, 'Juan Pérez García', '12345678A', 'Calle Luna 15', 'Almonte', 'Huelva', 'B-12345', '2025-02-27 16:30:00', 'Agente García Pérez', 100.00, 0.00, 100.00, 'Tarjeta'),
+	(2, 20250002, 'María López Ruiz', '87654321B', 'Avenida Sol 28', 'Almonte', 'Huelva', 'A-54321', '2025-02-28 09:15:00', 'Agente Martínez López', 25.00, 16.00, 41.00, 'Metálico'),
+	(3, 20250003, 'Carlos Sánchez Mora', '11223344C', 'Plaza España 3', 'Almonte', 'Huelva', 'B-98765', '2025-02-28 10:00:00', 'Agente Ruiz Santos', 130.00, 0.00, 130.00, 'Bizum');
+
+
+
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
