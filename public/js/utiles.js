@@ -285,6 +285,7 @@ let app = new Vue({
             localStorage.removeItem('isLogged');
             this.logeado = false;
             this.usuario = {};
+            this.mensajeAlerta = "";
         },
         formatDateForInput(dateString) {
             if (!dateString) return '';
