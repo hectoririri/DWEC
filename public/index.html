@@ -38,6 +38,12 @@
           <div class="card-body text-center">
             <!-- Título -->
             <h1 class="card-title mb-4">GRUA MUNICIPAL</h1>
+            <div v-if="mensajeAlerta" class="alert alert-danger fade show text-center" role="alert">
+              {{ mensajeAlerta }}
+              <button type="button" class="close" @click="mensajeAlerta = ''" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
             <p class="card-text text-muted mb-4">Inicia sesión para continuar</p>
               <!-- Campo de Email -->
               <div class="mb-3">

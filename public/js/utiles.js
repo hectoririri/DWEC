@@ -1004,6 +1004,7 @@ let app = new Vue({
                         this.logeado = true;
                     } else {
                         this.logeado = false;
+                        this.mensajeAlerta = "Email o contraseña incorrectos";
                         console.log("Email o contraseña incorrectos");
                     }
                 })

@@ -143,9 +143,6 @@ INSERT INTO `liquidacion` (`id`, `id_retirada`, `nombre`, `nif`, `domicilio`, `p
 	(2, 20250002, 'María López Ruiz', '87654321B', 'Avenida Sol 28', 'Almonte', 'Huelva', 'A-54321', '2025-02-28 09:15:00', 'Agente Martínez López', 25.00, 16.00, 41.00, 'Metálico'),
 	(3, 20250003, 'Carlos Sánchez Mora', '11223344C', 'Plaza España 3', 'Almonte', 'Huelva', 'B-98765', '2025-02-28 10:00:00', 'Agente Ruiz Santos', 130.00, 0.00, 130.00, 'Bizum');
 
-
-
-
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IFNULL(@OLD_FOREIGN_KEY_CHECKS, 1) */;
