@@ -1001,6 +1001,7 @@ let app = new Vue({
                         this.contrasena = "";
                         localStorage.setItem('user', JSON.stringify(this.usuario));
                         localStorage.setItem('isLogged', 'true');
+                        this.mensajeAlerta = "";
                         this.logeado = true;
                     } else {
                         this.logeado = false;
