@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Log;
+use Exception;
 use Illuminate\Http\Request;
 
 class LogCtrl extends Controller
@@ -16,7 +17,7 @@ class LogCtrl extends Controller
 
         return response()->json([
             'logs' => $logs
-        ]);
+        ], 200); // Status code 200 (OK)
     }
 
     /**
@@ -32,21 +33,30 @@ class LogCtrl extends Controller
      */
     public function store(Request $request)
     {
-        // Validar los datos enviados
-        $validatedData = $request->validate([
-            'usuario_id' => 'nullable|integer',
-            'descripcion' => 'nullable|string',
-            'accion' => 'nullable|string',
-        ]);
+        try {
+            // Validar los datos enviados
+            $validatedData = $request->validate([
+                'usuario_id' => 'nullable|integer',
+                'descripcion' => 'nullable|string',
+                'accion' => 'nullable|string',
+            ]);
 
-        // Crear un nuevo registro en la base de datos
-        $log = Log::create($validatedData);
+            // Crear un nuevo registro en la base de datos
+            $log = Log::create($validatedData);
 
-        // Devolver una respuesta JSON
-        return response()->json([
-            'message' => 'Registro creado exitosamente',
-            'data' => $log,
-        ], 201); // Código de estado 201 (Created)
+            // Devolver una respuesta JSON
+            return response()->json([
+                'message' => 'Registro creado exitosamente',
+                'data' => $log,
+            ], 201); // Código de estado 201 (Created)
+
+        } catch (Exception $e) {
+            // Si la creación falla..
+            return response()->json([
+                'message' => 'Error al crear el registro',
+                'error' => $e->getMessage()
+            ], 500); // Código de estado 500 (Internal Server Error)
+        }
     }
 
     /**
@@ -54,7 +64,22 @@ class LogCtrl extends Controller
      */
     public function show(string $id)
     {
-        //
+        try {
+            $log = Log::find($id);
+
+            // Devuelve la entrada y mensaje de confirmacion si existe
+            return response()->json([
+                'message' => 'Entrada de log encontrada',
+                'data' => $log
+            ], 200); // Código de estado 200 (OK)
+
+        } catch (Exception $e) {
+            // Error si la entrada no existe
+            return response()->json([
+                'message' => 'No se ha encontrado la entrada de log',
+                'error' => $e->getMessage()
+            ], 404); // Código de estado 404 (Not Found)
+        }
     }
 
     /**

@@ -13,7 +13,7 @@ class RetiradaCtrl extends Controller
     public function index()
     {
         $vehiculos = Retirada::all();
-        return $vehiculos;
+        return response()->json($vehiculos, 200);
     }
 
     /**
@@ -29,9 +29,11 @@ class RetiradaCtrl extends Controller
      */
     public function store(Request $request)
     {
-        Retirada::create($request->all());
-
-        return response()->json(['message' => 'Retirada creada correctamente'], 201);
+        $retirada = Retirada::create($request->all());
+        return response()->json([
+            'message' => 'Retirada creada correctamente',
+            'data' => $retirada
+        ], 201);
     }
 
     /**
@@ -40,7 +42,10 @@ class RetiradaCtrl extends Controller
     public function show(string $id)
     {
         $vehiculos = Retirada::find($id);
-        return $vehiculos;
+        if (!$vehiculos) {
+            return response()->json(['message' => 'Retirada no encontrada'], 404);
+        }
+        return response()->json($vehiculos, 200);
     }
 
     /**
@@ -61,7 +66,10 @@ class RetiradaCtrl extends Controller
             return response()->json(['message' => 'Retirada no encontrada'], 404);
         }
         $retirada->update($request->all());
-        return response()->json($retirada, 200);
+        return response()->json([
+            'message' => 'Retirada actualizada correctamente',
+            'data' => $retirada
+        ], 200);
     }
 
     /**

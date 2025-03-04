@@ -50,7 +50,11 @@ class UsuarioCtrl extends Controller
      */
     public function show($id)
     {
-        return Usuario::find($id);
+    $usuario = Usuario::find($id);
+    if (!$usuario) {
+        return response()->json(['message' => 'Usuario no encontrado'], 404);
+    }
+    return response()->json($usuario, 200);
     }
 
     /**
