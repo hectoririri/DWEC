@@ -8,8 +8,37 @@ use Illuminate\Http\Request;
 class RetiradaCtrl extends Controller
 {
     /**
-     * Display a listing of the resource.
-     */
+    * @OA\Get(
+    *     path="/api/retiradas",
+    *     tags={"Retiradas"},
+    *     summary="Lista todas las retiradas",
+    *     @OA\Response(
+    *         response=200,
+    *         description="OK",
+    *         @OA\JsonContent(
+    *             type="array",
+    *             @OA\Items(ref="#/components/schemas/Retirada")
+    *         )
+    *     )
+    * )
+    *
+    * @OA\Schema(
+    *     schema="Retirada",
+    *     type="object",
+    *     @OA\Property(property="id", type="integer"),
+    *     @OA\Property(property="matricula", type="string"),
+    *     @OA\Property(property="marca", type="string"),
+    *     @OA\Property(property="modelo", type="string"),
+    *     @OA\Property(property="color", type="string"),
+    *     @OA\Property(property="fecha_retirada", type="string", format="date-time"),
+    *     @OA\Property(property="lugar_retirada", type="string"),
+    *     @OA\Property(property="motivo", type="string"),
+    *     @OA\Property(property="estado", type="string"),
+    *     @OA\Property(property="created_at", type="string", format="date-time"),
+    *     @OA\Property(property="updated_at", type="string", format="date-time"),
+    *     @OA\Property(property="deleted_at", type="string", format="date-time", nullable=true)
+    * )
+    */
     public function index()
     {
         $vehiculos = Retirada::all();

@@ -540,6 +540,7 @@ let app = new Vue({
                     this.nuevoLog('Eliminación retirada', 'El administrador ha eliminado la retirada '+this.liquidacion_seleccionada.id)
                     this.liquidacion_seleccionada = {};
                     $('#liquidacionEliminarModal').modal('hide');
+                    this.mensajeAlerta = "Retirada eliminada correctamente"
                 }
             })
             .catch(error => {
@@ -763,6 +764,7 @@ let app = new Vue({
                     this.nuevoLog('Eliminación vehículo', 'El administrador ha eliminado el vehículo '+this.retirada_seleccionada.id)
                     this.retirada_seleccionada = {};
                     $('#retiradaEliminarModal').modal('hide');
+                    this.mensajeAlerta = "Vehículo eliminada correctamente"
                 }
             })
             .catch(error => {
@@ -883,6 +885,7 @@ let app = new Vue({
                     this.nuevoLog('Eliminación usuario', 'El administrador ha eliminado al usuario '+this.usuario_seleccionado.email)
                     this.usuario_seleccionado = {};
                     $('#deleteModal').modal('hide');
+                    this.mensajeAlerta = "Usuario eliminado correctamente"
                 }
             })
             .catch(error => {
