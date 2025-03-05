@@ -36,10 +36,7 @@ class LiquidacionCtrl extends Controller
     public function index()
     {
         $liquidaciones = Liquidacion::all();
-        return response()->json([
-            'message' => 'Liquidaciones recogidas correctamente',
-            'data' => $liquidaciones
-        ], 200);
+        return $liquidaciones;
     }
 
     /**
@@ -76,10 +73,7 @@ class LiquidacionCtrl extends Controller
                 'message' => 'Liquidacion no encocntrada'
             ], 404);
         }
-        return response()->json([
-            'message' => 'Liquidacion recogida correctamente',
-            'data' => $liquidacion
-        ], 200);
+        return $liquidacion;
     }
 
     /**
