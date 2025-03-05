@@ -224,6 +224,346 @@
                         }
                     }
                 }
+            },
+            "post": {
+                "tags": [
+                    "Retiradas"
+                ],
+                "summary": "Crea una nueva retirada",
+                "description": "Crea un nuevo registro de retirada de vehículo",
+                "operationId": "10b21e81f6cba4273e3321203c53180b",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "lugar": {
+                                        "type": "string"
+                                    },
+                                    "direccion": {
+                                        "type": "string"
+                                    },
+                                    "agente": {
+                                        "type": "string"
+                                    },
+                                    "matricula": {
+                                        "type": "string"
+                                    },
+                                    "marca": {
+                                        "type": "string"
+                                    },
+                                    "modelo": {
+                                        "type": "string"
+                                    },
+                                    "color": {
+                                        "type": "string"
+                                    },
+                                    "motivo": {
+                                        "type": "string"
+                                    },
+                                    "tipo_vehiculo": {
+                                        "type": "string"
+                                    },
+                                    "grua": {
+                                        "type": "string"
+                                    },
+                                    "estado": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Retirada creada exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Retirada creada correctamente"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Retirada"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Error de validación",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Error de validación"
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/retiradas/{id}": {
+            "get": {
+                "tags": [
+                    "Retiradas"
+                ],
+                "summary": "Obtiene una retirada específica por ID",
+                "description": "Retorna la información detallada de una retirada específica",
+                "operationId": "79f20edbf468b52a55f8a287f1e6a9ae",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la retirada a consultar",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Retirada encontrada exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Retirada"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Retirada no encontrada",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Retirada no encontrada"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Retiradas"
+                ],
+                "summary": "Actualiza una retirada específica",
+                "description": "Actualiza la información de una retirada existente",
+                "operationId": "7fd85588825ccca6914e2807788ec276",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la retirada a actualizar",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "lugar": {
+                                        "type": "string"
+                                    },
+                                    "direccion": {
+                                        "type": "string"
+                                    },
+                                    "agente": {
+                                        "type": "string"
+                                    },
+                                    "matricula": {
+                                        "type": "string"
+                                    },
+                                    "marca": {
+                                        "type": "string"
+                                    },
+                                    "modelo": {
+                                        "type": "string"
+                                    },
+                                    "color": {
+                                        "type": "string"
+                                    },
+                                    "motivo": {
+                                        "type": "string"
+                                    },
+                                    "tipo_vehiculo": {
+                                        "type": "string"
+                                    },
+                                    "grua": {
+                                        "type": "string"
+                                    },
+                                    "estado": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Retirada actualizada exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Retirada actualizada correctamente"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Retirada"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Retirada no encontrada",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Retirada no encontrada"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Retiradas"
+                ],
+                "summary": "Elimina una retirada específica",
+                "description": "Elimina un registro de retirada existente",
+                "operationId": "9e7272e9e4ded94c2741cd7edc5b6d59",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la retirada a eliminar",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Retirada eliminada exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Retirada eliminada correctamente"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Retirada no encontrada",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Retirada no encontrada"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/retiradas/deposito": {
+            "get": {
+                "tags": [
+                    "Retiradas"
+                ],
+                "summary": "Obtiene todas las retiradas en depósito",
+                "description": "Retorna la lista de vehículos que actualmente están en el depósito",
+                "operationId": "ac2d995c8b2864ad2c2ce9f73d56f6ea",
+                "responses": {
+                    "200": {
+                        "description": "Lista de retiradas en depósito obtenida exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Retirada"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No hay vehículos en depósito",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No hay vehículos en depósito"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
             }
         },
         "/api/tarifas": {
@@ -690,8 +1030,14 @@
             },
             "Retirada": {
                 "properties": {
-                    "id": {
-                        "type": "integer"
+                    "lugar": {
+                        "type": "string"
+                    },
+                    "direccion": {
+                        "type": "string"
+                    },
+                    "agente": {
+                        "type": "string"
                     },
                     "matricula": {
                         "type": "string"
@@ -705,31 +1051,17 @@
                     "color": {
                         "type": "string"
                     },
-                    "fecha_retirada": {
-                        "type": "string",
-                        "format": "date-time"
-                    },
-                    "lugar_retirada": {
+                    "motivo": {
                         "type": "string"
                     },
-                    "motivo": {
+                    "tipo_vehiculo": {
+                        "type": "string"
+                    },
+                    "grua": {
                         "type": "string"
                     },
                     "estado": {
                         "type": "string"
-                    },
-                    "created_at": {
-                        "type": "string",
-                        "format": "date-time"
-                    },
-                    "updated_at": {
-                        "type": "string",
-                        "format": "date-time"
-                    },
-                    "deleted_at": {
-                        "type": "string",
-                        "format": "date-time",
-                        "nullable": true
                     }
                 },
                 "type": "object"

@@ -8,11 +8,38 @@ use Illuminate\Http\Request;
 class LiquidacionCtrl extends Controller
 {
     /**
-     * Display a listing of the resource.
-     */
+    * @OA\Get(
+    *     path="/api/liquidaciones",
+    *     tags={"Liquidaciones"},
+    *     summary="Lista todas las liquidaciones",
+    *     @OA\Response(
+    *         response=200,
+    *         description="OK",
+    *         @OA\JsonContent(
+    *             type="array",
+    *             @OA\Items(ref="#/components/schemas/Liquidacion")
+    *         )
+    *     )
+    * )
+    *
+    * @OA\Schema(
+    *     schema="Liquidacion",
+    *     type="object",
+    *     @OA\Property(property="id", type="integer"),
+    *     @OA\Property(property="retirada_id", type="integer"),
+    *     @OA\Property(property="fecha", type="string", format="date"),
+    *     @OA\Property(property="importe", type="number", format="float"),
+    *     @OA\Property(property="created_at", type="string", format="date-time"),
+    *     @OA\Property(property="updated_at", type="string", format="date-time")
+    * )
+    */
     public function index()
     {
-        return Liquidacion::all();
+        $liquidaciones = Liquidacion::all();
+        return response()->json([
+            'message' => 'Liquidaciones recogidas correctamente',
+            'data' => $liquidaciones
+        ], 200);
     }
 
     /**
@@ -32,7 +59,10 @@ class LiquidacionCtrl extends Controller
         $liquidacion->retirada->estado = 'Retirado';
         $liquidacion->retirada->fecha_salida = $request->fecha;
         $liquidacion->retirada->save();
-        return response()->json(['message' => 'Liquidacion creada correctamente'], 201);
+        return response()->json([
+            'message' => 'Liquidacion creada correctamente',
+            'data' => $liquidacion
+        ], 201);
     }
 
     /**
@@ -40,7 +70,16 @@ class LiquidacionCtrl extends Controller
      */
     public function show(string $id)
     {
-        return Liquidacion::find($id);
+        $liquidacion = Liquidacion::find($id);
+        if (!$liquidacion) {
+            return response()->json([
+                'message' => 'Liquidacion no encocntrada'
+            ], 404);
+        }
+        return response()->json([
+            'message' => 'Liquidacion recogida correctamente',
+            'data' => $liquidacion
+        ], 200);
     }
 
     /**
@@ -57,8 +96,16 @@ class LiquidacionCtrl extends Controller
     public function update(Request $request, string $id)
     {
         $liquidacion = Liquidacion::find($id);
+        if (!$liquidacion) {
+            return response()->json([
+                'message' => 'Liquidacion no encontrada'
+            ], 404);
+        }
         $liquidacion->update($request->all());
-        return response()->json($liquidacion, 200);
+        return response()->json([
+            'message' => 'Liquidacion actualizada correctamente',
+            'data' => $liquidacion
+        ], 200);
     }
 
     /**
@@ -67,6 +114,14 @@ class LiquidacionCtrl extends Controller
     public function destroy(string $id)
     {
         $liquidacion = Liquidacion::find($id);
+        if (!$liquidacion) {
+            return response()->json([
+                'message' => 'Liquidacion no encontrada'
+            ], 404);
+        }
         $liquidacion->delete();
+        return response()->json([
+            'message' => 'Liquidacion borrada correctamente'
+        ], 200);
     }
 }
